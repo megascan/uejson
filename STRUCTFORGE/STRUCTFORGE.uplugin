@@ -1,0 +1,31 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0.0",
+  "FriendlyName": "STRUCTFORGE - Advanced JSON Serialization",
+  "Description": "Powerful JSON serialization plugin for Unreal Engine 5 with comprehensive Blueprint support for complex nested structures, arrays, and all basic data types",
+  "Category": "Utilities",
+  "CreatedBy": "Cylinder Games",
+  "CreatedByURL": "",
+  "DocsURL": "",
+  "MarketplaceURL": "",
+  "SupportURL": "",
+  "CanContainContent": false,
+  "IsBetaVersion": false,
+  "IsExperimentalVersion": false,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "STRUCTFORGE",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "Linux",
+        "Android",
+        "IOS"
+      ]
+    }
+  ]
+}
