@@ -1,0 +1,22 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.3",
+	"Category": "",
+	"Description": "Test project for STRUCTFORGE plugin",
+	"Modules": [
+		{
+			"Name": "StructForgeTest",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "STRUCTFORGE",
+			"Enabled": true
+		}
+	]
+}
