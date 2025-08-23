@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRUCTFORGE Documentation - UE5 JSON Serialization</title>
+    <style>
+        :root {
+            --primary: #0073e6;
+            --primary-dark: #005bb5;
+            --secondary: #1a1a1a;
+            --accent: #00d4aa;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #6c757d;
+            --border: #e0e0e0;
+            --code-bg: #f4f4f4;
+            --success: #28a745;
+            --warning: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.95);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .search-results {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1001;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-result-item:hover {
+            background: var(--bg);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-category {
+            font-size: 0.75rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .search-result-title {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            background: var(--bg);
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Content */
+        .content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        /* Function Cards */
+        .function-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .function-card {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .function-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .function-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .function-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .function-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .function-type.cpp {
+            background: var(--secondary);
+        }
+
+        .function-description {
+            color: var(--text);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .function-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-value {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        /* Code Blocks */
+        .code-section {
+            margin-top: 1rem;
+        }
+
+        .code-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: var(--text);
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .copy-button.copied {
+            background: var(--success);
+        }
+
+        /* Parameters Table */
+        .params-table {
+            width: 100%;
+            margin-top: 1rem;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .params-table th {
+            background: var(--bg);
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .params-table td {
+            padding: 0.75rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        .param-name {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .param-type {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: var(--text-light);
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        .tag.blueprint {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #1976d2;
+        }
+
+        .tag.async {
+            background: #fff3e0;
+            border-color: #ff9800;
+            color: #f57c00;
+        }
+
+        /* Welcome Section */
+        .welcome-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .welcome-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .welcome-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-card-count {
+            font-size: 2rem;
+            font-weight: bold;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Syntax Highlighting */
+        .hljs-keyword { color: #0073e6; font-weight: 600; }
+        .hljs-string { color: #028a0f; }
+        .hljs-comment { color: #6c757d; font-style: italic; }
+        .hljs-number { color: #d73502; }
+        .hljs-type { color: #9c27b0; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🔧</div>
+                <span>STRUCTFORGE Docs</span>
+            </div>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search functions, examples, or keywords...">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <h3 class="sidebar-title">Documentation</h3>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Getting Started</div>
+                <a href="#welcome" class="nav-link active" data-section="welcome">Overview</a>
+                <a href="#quickstart" class="nav-link" data-section="quickstart">Quick Start</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Core Operations</div>
+                <a href="#core" class="nav-link" data-section="core">JSON Objects</a>
+                <a href="#getters" class="nav-link" data-section="getters">Getters</a>
+                <a href="#setters" class="nav-link" data-section="setters">Setters</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Advanced</div>
+                <a href="#arrays" class="nav-link" data-section="arrays">Array Operations</a>
+                <a href="#structs" class="nav-link" data-section="structs">Struct Serialization</a>
+                <a href="#fileio" class="nav-link" data-section="fileio">File I/O</a>
+                <a href="#utilities" class="nav-link" data-section="utilities">Utilities</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">C++ Reference</div>
+                <a href="#cpp-advanced" class="nav-link" data-section="cpp-advanced">Advanced C++</a>
+                <a href="#metadata" class="nav-link" data-section="metadata">Metadata</a>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Welcome Section -->
+            <section id="welcome" class="section active">
+                <div class="section-header">
+                    <h1 class="section-title">STRUCTFORGE Documentation</h1>
+                    <p class="section-subtitle">Professional JSON Serialization for Unreal Engine 5</p>
+                </div>
+
+                <div class="welcome-cards">
+                    <div class="welcome-card" onclick="navigateToSection('core')">
+                        <div class="welcome-card-icon">📦</div>
+                        <div class="welcome-card-title">Blueprint Nodes</div>
+                        <div class="welcome-card-count">53+</div>
+                    </div>
+                    <div class="welcome-card" onclick="navigateToSection('structs')">
+                        <div class="welcome-card-icon">🔄</div>
+                        <div class="welcome-card-title">Any USTRUCT</div>
+                        <div class="welcome-card-count">∞</div>
+                    </div>
+                    <div class="welcome-card" onclick="navigateToSection('fileio')">
+                        <div class="welcome-card-icon">💾</div>
+                        <div class="welcome-card-title">File I/O</div>
+                        <div class="welcome-card-count">Async</div>
+                    </div>
+                    <div class="welcome-card" onclick="navigateToSection('cpp-advanced')">
+                        <div class="welcome-card-icon">⚡</div>
+                        <div class="welcome-card-title">Performance</div>
+                        <div class="welcome-card-count">Fast</div>
+                    </div>
+                </div>
+
+                <div class="function-card" style="margin-top: 2rem;">
+                    <h3>Key Features</h3>
+                    <ul style="line-height: 2; margin-left: 1.5rem;">
+                        <li>Complete Blueprint integration with 53+ nodes</li>
+                        <li>Serialize any USTRUCT without modification</li>
+                        <li>Support for all UE5 types (FVector, FRotator, FTransform, etc.)</li>
+                        <li>Thread-safe async operations</li>
+                        <li>Metadata-based field customization</li>
+                        <li>Config Data Assets for field mapping</li>
+                        <li>Full C++ API with examples</li>
+                        <li>Zero dependencies beyond UE5's built-in modules</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Quick Start Section -->
+            <section id="quickstart" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Quick Start Guide</h1>
+                    <p class="section-subtitle">Get up and running in minutes</p>
+                </div>
+
+                <div class="function-card">
+                    <div class="function-name">Blueprint Example</div>
+                    <div class="function-description">
+                        The simplest way to serialize any struct to JSON in Blueprint:
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">Blueprint Nodes:</div>
+                        <div class="code-block">
+                            <pre>1. Create your USTRUCT variable
+2. Connect to "Struct to JSON String" node
+3. Get JSON string output
+That's it!</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card">
+                    <div class="function-name">C++ Example</div>
+                    <div class="function-description">
+                        Quick C++ serialization example:
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre><span class="hljs-comment">// Define your struct</span>
+<span class="hljs-keyword">USTRUCT</span>()
+<span class="hljs-keyword">struct</span> <span class="hljs-type">FMyData</span>
+{
+    <span class="hljs-keyword">GENERATED_BODY</span>()
+    
+    <span class="hljs-keyword">UPROPERTY</span>()
+    <span class="hljs-type">FString</span> Name;
+    
+    <span class="hljs-keyword">UPROPERTY</span>()
+    <span class="hljs-type">int32</span> Score;
+};
+
+<span class="hljs-comment">// Serialize to JSON</span>
+<span class="hljs-type">FMyData</span> Data;
+Data.Name = <span class="hljs-string">TEXT("Player")</span>;
+Data.Score = <span class="hljs-number">100</span>;
+
+<span class="hljs-type">FString</span> JsonString;
+<span class="hljs-type">FJsonObjectConverter</span>::UStructToJsonObjectString(Data, JsonString);</pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Core Operations Section -->
+            <section id="core" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Core JSON Operations</h1>
+                    <p class="section-subtitle">Fundamental JSON object creation and manipulation</p>
+                </div>
+
+                <div class="function-grid">
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Create Empty JSON Object</div>
+                                <div class="function-type">Blueprint</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Creates a new, empty JSON object that can be populated with data.
+                        </div>
+                        <div class="function-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Returns</span>
+                                <span class="meta-value">UStructForgeJsonObject*</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Category</span>
+                                <span class="meta-value">StructForge|Core</span>
+                            </div>
+                        </div>
+                        <div class="code-section">
+                            <div class="code-label">C++ Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-type">UStructForgeJsonObject</span>* JsonObj = <span class="hljs-type">UStructForgeBlueprintLibrary</span>::CreateJsonObject();</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Parse JSON String</div>
+                                <div class="function-type">Blueprint</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Parses a JSON string and creates a JSON object from it.
+                        </div>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="param-name">JsonString</td>
+                                    <td class="param-type">FString</td>
+                                    <td>The JSON string to parse</td>
+                                </tr>
+                                <tr>
+                                    <td class="param-name">OutJsonObject</td>
+                                    <td class="param-type">UStructForgeJsonObject*&</td>
+                                    <td>The resulting JSON object</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="code-section">
+                            <div class="code-label">C++ Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-type">FString</span> JsonString = <span class="hljs-string">TEXT("{\"name\":\"John\",\"age\":30}")</span>;
+<span class="hljs-type">UStructForgeJsonObject</span>* JsonObj = <span class="hljs-keyword">nullptr</span>;
+<span class="hljs-keyword">bool</span> bSuccess = <span class="hljs-type">UStructForgeBlueprintLibrary</span>::ParseJsonString(JsonString, JsonObj);</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">JSON Object to String</div>
+                                <div class="function-type">Blueprint</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Converts a JSON object to its string representation.
+                        </div>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="param-name">JsonObject</td>
+                                    <td class="param-type">UStructForgeJsonObject*</td>
+                                    <td>The JSON object to convert</td>
+                                </tr>
+                                <tr>
+                                    <td class="param-name">bPrettyPrint</td>
+                                    <td class="param-type">bool</td>
+                                    <td>Format with indentation</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="code-section">
+                            <div class="code-label">C++ Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-type">FString</span> JsonString = <span class="hljs-type">UStructForgeBlueprintLibrary</span>::JsonObjectToString(JsonObj, <span class="hljs-keyword">true</span>);</pre>
+                            </div>
+                        </div>
+                        <div class="tags">
+                            <span class="tag blueprint">Blueprint Pure</span>
+                            <span class="tag">Compact Node</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Getters Section -->
+            <section id="getters" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Getter Functions</h1>
+                    <p class="section-subtitle">Retrieve values from JSON objects</p>
+                </div>
+
+                <div class="function-grid">
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Get String from JSON</div>
+                                <div class="function-type">Blueprint</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Retrieves a string value from a JSON object by key.
+                        </div>
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="param-name">JsonObject</td>
+                                    <td class="param-type">UStructForgeJsonObject*</td>
+                                    <td>The JSON object</td>
+                                </tr>
+                                <tr>
+                                    <td class="param-name">Key</td>
+                                    <td class="param-type">FString</td>
+                                    <td>The field name</td>
+                                </tr>
+                                <tr>
+                                    <td class="param-name">DefaultValue</td>
+                                    <td class="param-type">FString</td>
+                                    <td>Value if key not found</td>
+                                </tr>
+                                <tr>
+                                    <td class="param-name">bFound</td>
+                                    <td class="param-type">bool&</td>
+                                    <td>Was the key found?</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="code-section">
+                            <div class="code-label">C++ Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-keyword">bool</span> bFound;
+<span class="hljs-type">FString</span> Name = <span class="hljs-type">UStructForgeBlueprintLibrary</span>::GetJsonString(
+    JsonObj, 
+    <span class="hljs-string">TEXT("name")</span>, 
+    <span class="hljs-string">TEXT("Unknown")</span>, 
+    bFound
+);</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional getter cards would go here -->
+                </div>
+            </section>
+
+            <!-- Setters Section -->
+            <section id="setters" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Setter Functions</h1>
+                    <p class="section-subtitle">Set values in JSON objects</p>
+                </div>
+
+                <div class="function-grid">
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Set String in JSON</div>
+                                <div class="function-type">Blueprint</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Sets a string value in a JSON object.
+                        </div>
+                        <div class="code-section">
+                            <div class="code-label">C++ Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-type">UStructForgeBlueprintLibrary</span>::SetJsonString(JsonObj, <span class="hljs-string">TEXT("name")</span>, <span class="hljs-string">TEXT("John Doe")</span>);</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Arrays Section -->
+            <section id="arrays" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Array Operations</h1>
+                    <p class="section-subtitle">Handle JSON arrays of various types</p>
+                </div>
+
+                <div class="function-grid">
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Get/Set String Array</div>
+                                <div class="function-type">Blueprint</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Work with arrays of strings in JSON.
+                        </div>
+                        <div class="code-section">
+                            <div class="code-label">C++ Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-comment">// Set array</span>
+<span class="hljs-type">TArray&lt;FString&gt;</span> Tags = {<span class="hljs-string">TEXT("RPG")</span>, <span class="hljs-string">TEXT("Adventure")</span>};
+<span class="hljs-type">UStructForgeBlueprintLibrary</span>::SetJsonStringArray(JsonObj, <span class="hljs-string">TEXT("tags")</span>, Tags);
+
+<span class="hljs-comment">// Get array</span>
+<span class="hljs-type">TArray&lt;FString&gt;</span> LoadedTags;
+<span class="hljs-keyword">bool</span> bSuccess = <span class="hljs-type">UStructForgeBlueprintLibrary</span>::GetJsonStringArray(JsonObj, <span class="hljs-string">TEXT("tags")</span>, LoadedTags);</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Struct Serialization Section -->
+            <section id="structs" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Struct Serialization</h1>
+                    <p class="section-subtitle">Serialize any USTRUCT to/from JSON</p>
+                </div>
+
+                <div class="function-grid">
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Struct to JSON String (Generic)</div>
+                                <div class="function-type">Blueprint</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            The power of STRUCTFORGE - serialize ANY USTRUCT to JSON without modification.
+                            In Blueprint, this node accepts wildcard struct pins!
+                        </div>
+                        <div class="code-section">
+                            <div class="code-label">C++ Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-comment">// Define any struct</span>
+<span class="hljs-keyword">USTRUCT</span>(<span class="hljs-type">BlueprintType</span>)
+<span class="hljs-keyword">struct</span> <span class="hljs-type">FMyCustomData</span>
+{
+    <span class="hljs-keyword">GENERATED_BODY</span>()
+    
+    <span class="hljs-keyword">UPROPERTY</span>()
+    <span class="hljs-type">FString</span> Name;
+    
+    <span class="hljs-keyword">UPROPERTY</span>()
+    <span class="hljs-type">TArray&lt;int32&gt;</span> Values;
+    
+    <span class="hljs-keyword">UPROPERTY</span>()
+    <span class="hljs-type">FVector</span> Position;
+};
+
+<span class="hljs-comment">// Serialize without any setup!</span>
+<span class="hljs-type">FMyCustomData</span> Data;
+Data.Name = <span class="hljs-string">TEXT("Test")</span>;
+Data.Position = <span class="hljs-type">FVector</span>(<span class="hljs-number">100</span>, <span class="hljs-number">200</span>, <span class="hljs-number">300</span>);
+
+<span class="hljs-type">FString</span> JsonString;
+<span class="hljs-type">FJsonObjectConverter</span>::UStructToJsonObjectString(Data, JsonString, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-keyword">nullptr</span>, <span class="hljs-keyword">true</span>);</pre>
+                            </div>
+                        </div>
+                        <div class="tags">
+                            <span class="tag blueprint">Wildcard Support</span>
+                            <span class="tag">CustomThunk</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- File I/O Section -->
+            <section id="fileio" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">File I/O Operations</h1>
+                    <p class="section-subtitle">Save and load JSON files with async support</p>
+                </div>
+
+                <div class="function-grid">
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Save/Load JSON File</div>
+                                <div class="function-type">Blueprint</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Save JSON strings to disk or load them from files.
+                        </div>
+                        <div class="code-section">
+                            <div class="code-label">C++ Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-comment">// Save to file</span>
+<span class="hljs-type">FString</span> JsonString = <span class="hljs-string">TEXT("{\"save\":true}")</span>;
+<span class="hljs-type">FString</span> FilePath = <span class="hljs-type">FPaths</span>::ProjectSavedDir() / <span class="hljs-string">TEXT("SaveGame.json")</span>;
+<span class="hljs-keyword">bool</span> bSuccess = <span class="hljs-type">UStructForgeBlueprintLibrary</span>::SaveJsonToFile(JsonString, FilePath);
+
+<span class="hljs-comment">// Load from file</span>
+<span class="hljs-type">FString</span> LoadedJson;
+bSuccess = <span class="hljs-type">UStructForgeBlueprintLibrary</span>::LoadJsonFromFile(FilePath, LoadedJson);</pre>
+                            </div>
+                        </div>
+                        <div class="tags">
+                            <span class="tag async">Async Available</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Utilities Section -->
+            <section id="utilities" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Utility Functions</h1>
+                    <p class="section-subtitle">JSON validation, formatting, and manipulation</p>
+                </div>
+
+                <div class="function-grid">
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Pretty Print / Minify</div>
+                                <div class="function-type">Blueprint</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Format JSON for readability or compress for size.
+                        </div>
+                        <div class="code-section">
+                            <div class="code-label">C++ Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-comment">// Make readable</span>
+<span class="hljs-type">FString</span> PrettyJson = <span class="hljs-type">UStructForgeBlueprintLibrary</span>::PrettyPrintJson(CompactJson);
+
+<span class="hljs-comment">// Minimize size</span>
+<span class="hljs-type">FString</span> MinifiedJson = <span class="hljs-type">UStructForgeBlueprintLibrary</span>::MinifyJson(PrettyJson);</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Merge JSON Objects</div>
+                                <div class="function-type">Blueprint</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Combine two JSON objects with conflict resolution.
+                        </div>
+                        <div class="code-section">
+                            <div class="code-label">C++ Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-type">UStructForgeJsonObject</span>* MergedObj = <span class="hljs-type">UStructForgeBlueprintLibrary</span>::MergeJsonObjects(
+    BaseObj, 
+    UpdateObj, 
+    <span class="hljs-keyword">true</span> <span class="hljs-comment">// overwrite existing</span>
+);</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- C++ Advanced Section -->
+            <section id="cpp-advanced" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Advanced C++ Features</h1>
+                    <p class="section-subtitle">Power features for C++ developers</p>
+                </div>
+
+                <div class="function-grid">
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Async Operations</div>
+                                <div class="function-type cpp">C++ Only</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Perform JSON operations on background threads with delegates.
+                        </div>
+                        <div class="code-section">
+                            <div class="code-label">Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-type">FOnStructForgeAsyncComplete</span> OnComplete;
+OnComplete.BindLambda([](bool bSuccess, <span class="hljs-keyword">const</span> <span class="hljs-type">FString</span>& Result)
+{
+    <span class="hljs-keyword">if</span> (bSuccess)
+    {
+        <span class="hljs-type">UE_LOG</span>(LogTemp, Log, <span class="hljs-string">TEXT("Async operation completed: %s")</span>, *Result);
+    }
+});
+
+<span class="hljs-type">UStructForgeHandler</span>::SerializePlayerDataAsync(PlayerData, FilePath, OnComplete);</pre>
+                            </div>
+                        </div>
+                        <div class="tags">
+                            <span class="tag async">Thread-Safe</span>
+                            <span class="tag">Background Processing</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Metadata Section -->
+            <section id="metadata" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Metadata-Based Serialization</h1>
+                    <p class="section-subtitle">Control JSON serialization with UPROPERTY metadata</p>
+                </div>
+
+                <div class="function-grid">
+                    <div class="function-card">
+                        <div class="function-header">
+                            <div>
+                                <div class="function-name">Custom Field Names & Exclusion</div>
+                                <div class="function-type cpp">C++</div>
+                            </div>
+                        </div>
+                        <div class="function-description">
+                            Use metadata to customize how your structs are serialized to JSON.
+                        </div>
+                        <div class="code-section">
+                            <div class="code-label">Example:</div>
+                            <div class="code-block">
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                                <pre><span class="hljs-keyword">USTRUCT</span>()
+<span class="hljs-keyword">struct</span> <span class="hljs-type">FCustomSerializedStruct</span>
+{
+    <span class="hljs-keyword">GENERATED_BODY</span>()
+    
+    <span class="hljs-comment">// This field will be serialized as "player_name" in JSON</span>
+    <span class="hljs-keyword">UPROPERTY</span>(meta=(<span class="hljs-string">JsonFieldName="player_name"</span>))
+    <span class="hljs-type">FString</span> PlayerName;
+    
+    <span class="hljs-comment">// This field will be excluded from JSON</span>
+    <span class="hljs-keyword">UPROPERTY</span>(meta=(<span class="hljs-string">JsonSerialize="false"</span>))
+    <span class="hljs-type">FString</span> InternalData;
+    
+    <span class="hljs-comment">// Normal serialization</span>
+    <span class="hljs-keyword">UPROPERTY</span>()
+    <span class="hljs-type">int32</span> Score;
+};
+
+<span class="hljs-comment">// Use metadata-aware serialization</span>
+<span class="hljs-type">FString</span> JsonString;
+<span class="hljs-type">UStructForgeHandler</span>::SerializeUStructToJsonObjectStringWithMetadata(
+    <span class="hljs-type">FCustomSerializedStruct</span>::StaticStruct(),
+    &MyStruct,
+    JsonString,
+    <span class="hljs-keyword">true</span>
+);</pre>
+                            </div>
+                        </div>
+                        <div class="tags">
+                            <span class="tag">Field Mapping</span>
+                            <span class="tag">Selective Serialization</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        function navigateToSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.section === sectionId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Setup navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = link.dataset.section;
+                navigateToSection(section);
+            });
+        });
+
+        // Search functionality
+        const searchData = [
+            { title: 'Create JSON Object', category: 'Core', section: 'core', keywords: ['create', 'new', 'empty'] },
+            { title: 'Parse JSON String', category: 'Core', section: 'core', keywords: ['parse', 'string', 'convert'] },
+            { title: 'Get String from JSON', category: 'Getters', section: 'getters', keywords: ['get', 'string', 'retrieve'] },
+            { title: 'Set String in JSON', category: 'Setters', section: 'setters', keywords: ['set', 'string', 'store'] },
+            { title: 'Struct to JSON', category: 'Serialization', section: 'structs', keywords: ['struct', 'serialize', 'convert'] },
+            { title: 'Save JSON to File', category: 'File I/O', section: 'fileio', keywords: ['save', 'file', 'disk'] },
+            { title: 'Async Operations', category: 'Advanced', section: 'cpp-advanced', keywords: ['async', 'thread', 'background'] },
+            { title: 'Metadata Serialization', category: 'Advanced', section: 'metadata', keywords: ['metadata', 'custom', 'field'] },
+            // Add more search items...
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            
+            if (query.length < 2) {
+                searchResults.classList.remove('active');
+                return;
+            }
+            
+            const results = searchData.filter(item => {
+                return item.title.toLowerCase().includes(query) ||
+                       item.category.toLowerCase().includes(query) ||
+                       item.keywords.some(keyword => keyword.includes(query));
+            });
+            
+            if (results.length > 0) {
+                searchResults.innerHTML = results.map(result => `
+                    <div class="search-result-item" onclick="navigateToSection('${result.section}')">
+                        <div class="search-result-category">${result.category}</div>
+                        <div class="search-result-title">${result.title}</div>
+                    </div>
+                `).join('');
+                searchResults.classList.add('active');
+            } else {
+                searchResults.innerHTML = `
+                    <div class="search-result-item">
+                        <div class="search-result-title">No results found</div>
+                    </div>
+                `;
+                searchResults.classList.add('active');
+            }
+        });
+
+        // Close search results when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.remove('active');
+            }
+        });
+
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.parentElement.querySelector('pre');
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

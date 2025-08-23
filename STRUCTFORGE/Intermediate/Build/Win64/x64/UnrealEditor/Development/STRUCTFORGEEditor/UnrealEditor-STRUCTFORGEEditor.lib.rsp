@@ -1,0 +1,14 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-STRUCTFORGEEditor.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"D:/Unreal Projects/JSONTesting/Intermediate/Build/Win64/x64/JSONTestingEditor/Development/UnrealEd/SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.h.obj"
+"D:/Unreal Projects/JSONTesting/Plugins/STRUCTFORGE/Intermediate/Build/Win64/x64/UnrealEditor/Development/STRUCTFORGEEditor/Module.STRUCTFORGEEditor.cpp.obj"
+"D:/Unreal Projects/JSONTesting/Plugins/STRUCTFORGE/Intermediate/Build/Win64/x64/UnrealEditor/Development/STRUCTFORGEEditor/STRUCTFORGEEditor.cpp.obj"
+"D:/Unreal Projects/JSONTesting/Plugins/STRUCTFORGE/Intermediate/Build/Win64/x64/UnrealEditor/Development/STRUCTFORGEEditor/StructPropertyCustomization.cpp.obj"
+"D:/Unreal Projects/JSONTesting/Plugins/STRUCTFORGE/Intermediate/Build/Win64/x64/UnrealEditor/Development/STRUCTFORGEEditor/Default.rc2.res"
+/OUT:"D:/Unreal Projects/JSONTesting/Plugins/STRUCTFORGE/Intermediate/Build/Win64/x64/UnrealEditor/Development/STRUCTFORGEEditor/UnrealEditor-STRUCTFORGEEditor.lib"

@@ -10,7 +10,7 @@
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FStructForgeSerializationRoundtrip,
     "StructForge.Serialization.Roundtrip",
-    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FStructForgeSerializationRoundtrip::RunTest(const FString& Parameters)
 {
@@ -92,7 +92,7 @@ bool FStructForgeSerializationRoundtrip::RunTest(const FString& Parameters)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FStructForgeJsonValidation,
     "StructForge.Validation.JsonStrings",
-    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FStructForgeJsonValidation::RunTest(const FString& Parameters)
 {
@@ -115,7 +115,7 @@ bool FStructForgeJsonValidation::RunTest(const FString& Parameters)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FStructForgeArraySerialization,
     "StructForge.Serialization.Arrays",
-    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FStructForgeArraySerialization::RunTest(const FString& Parameters)
 {
@@ -154,7 +154,7 @@ bool FStructForgeArraySerialization::RunTest(const FString& Parameters)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FStructForgeMapSerialization,
     "StructForge.Serialization.Maps",
-    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FStructForgeMapSerialization::RunTest(const FString& Parameters)
 {
@@ -184,7 +184,7 @@ bool FStructForgeMapSerialization::RunTest(const FString& Parameters)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FStructForgeJsonObjectWrapper,
     "StructForge.JsonObject.WrapperFunctionality",
-    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FStructForgeJsonObjectWrapper::RunTest(const FString& Parameters)
 {
@@ -238,7 +238,7 @@ bool FStructForgeJsonObjectWrapper::RunTest(const FString& Parameters)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FStructForgeBlueprintLibrary,
     "StructForge.Blueprint.LibraryFunctions",
-    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FStructForgeBlueprintLibrary::RunTest(const FString& Parameters)
 {
@@ -294,7 +294,7 @@ bool FStructForgeBlueprintLibrary::RunTest(const FString& Parameters)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FStructForgeComplexNesting,
     "StructForge.Serialization.ComplexNesting",
-    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FStructForgeComplexNesting::RunTest(const FString& Parameters)
 {
@@ -311,9 +311,23 @@ bool FStructForgeComplexNesting::RunTest(const FString& Parameters)
     OriginalData.PlayerMap.Add(TEXT("Player1"), Player1);
     OriginalData.PlayerMap.Add(TEXT("Player2"), Player2);
     
-    OriginalData.Matrix.Add({1, 2, 3});
-    OriginalData.Matrix.Add({4, 5, 6});
-    OriginalData.Matrix.Add({7, 8, 9});
+    FIntArray Row1;
+    Row1.Values.Add(1);
+    Row1.Values.Add(2);
+    Row1.Values.Add(3);
+    OriginalData.Matrix.Add(Row1);
+    
+    FIntArray Row2;
+    Row2.Values.Add(4);
+    Row2.Values.Add(5);
+    Row2.Values.Add(6);
+    OriginalData.Matrix.Add(Row2);
+    
+    FIntArray Row3;
+    Row3.Values.Add(7);
+    Row3.Values.Add(8);
+    Row3.Values.Add(9);
+    OriginalData.Matrix.Add(Row3);
     
     OriginalData.GlobalSettings = UStructForgeBlueprintLibrary::CreateSampleGameSettings();
     
@@ -332,7 +346,7 @@ bool FStructForgeComplexNesting::RunTest(const FString& Parameters)
     
     if (DeserializedData.Matrix.Num() > 0)
     {
-        TestEqual("Matrix columns should match", DeserializedData.Matrix[0].Num(), OriginalData.Matrix[0].Num());
+        TestEqual("Matrix columns should match", DeserializedData.Matrix[0].Values.Num(), OriginalData.Matrix[0].Values.Num());
     }
     
     TestEqual("GlobalSettings resolution should match", 
@@ -343,7 +357,7 @@ bool FStructForgeComplexNesting::RunTest(const FString& Parameters)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FStructForgePerformance,
     "StructForge.Performance.LargeData",
-    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FStructForgePerformance::RunTest(const FString& Parameters)
 {
@@ -393,7 +407,7 @@ bool FStructForgePerformance::RunTest(const FString& Parameters)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FStructForgeErrorHandling,
     "StructForge.ErrorHandling.InvalidInputs",
-    EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
 bool FStructForgeErrorHandling::RunTest(const FString& Parameters)
 {

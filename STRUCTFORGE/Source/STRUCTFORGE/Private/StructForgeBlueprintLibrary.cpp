@@ -1,6 +1,7 @@
 #include "StructForgeBlueprintLibrary.h"
 #include "StructForgeJsonObject.h"
 #include "StructForgeHandler.h"
+#include "StructForgeConfig.h"
 #include "STRUCTFORGE.h"
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonSerializer.h"
@@ -664,4 +665,163 @@ TArray<FInventoryItem> UStructForgeBlueprintLibrary::CreateSampleInventory()
     SampleInventory.Add(Item3);
     
     return SampleInventory;
+}
+
+bool UStructForgeBlueprintLibrary::StructToJsonString(const UStruct* StructIn, FString& JsonString, bool bPrettyPrint)
+{
+    // This function should never be called directly - the CustomThunk handles it
+    checkNoEntry();
+    return false;
+}
+
+bool UStructForgeBlueprintLibrary::JsonStringToStruct(const FString& JsonString, UStruct* StructOut)
+{
+    // This function should never be called directly - the CustomThunk handles it
+    checkNoEntry();
+    return false;
+}
+
+DEFINE_FUNCTION(UStructForgeBlueprintLibrary::execStructToJsonString)
+{
+    // Step through the stack to get the struct parameter
+    Stack.MostRecentPropertyAddress = nullptr;
+    Stack.Step(Stack.Object, nullptr);
+    FStructProperty* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
+    void* StructAddress = Stack.MostRecentPropertyAddress;
+    
+    // Get the output JSON string parameter
+    P_GET_PROPERTY_REF(FStrProperty, JsonString);
+    
+    // Get the pretty print parameter
+    P_GET_UBOOL(bPrettyPrint);
+    
+    P_FINISH;
+    
+    // Perform the serialization
+    bool bSuccess = false;
+    if (StructProperty && StructAddress)
+    {
+        UScriptStruct* Struct = StructProperty->Struct;
+        bSuccess = FJsonObjectConverter::UStructToJsonObjectString(Struct, StructAddress, JsonString, 0, 0, 0, nullptr, bPrettyPrint);
+    }
+    
+    *(bool*)RESULT_PARAM = bSuccess;
+}
+
+DEFINE_FUNCTION(UStructForgeBlueprintLibrary::execJsonStringToStruct)
+{
+    // Get the JSON string parameter
+    P_GET_PROPERTY(FStrProperty, JsonString);
+    
+    // Step through the stack to get the output struct parameter
+    Stack.MostRecentPropertyAddress = nullptr;
+    Stack.Step(Stack.Object, nullptr);
+    FStructProperty* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
+    void* StructAddress = Stack.MostRecentPropertyAddress;
+    
+    P_FINISH;
+    
+    // Perform the deserialization
+    bool bSuccess = false;
+    if (StructProperty && StructAddress)
+    {
+        UScriptStruct* Struct = StructProperty->Struct;
+        // Use the helper function from StructForgeHandler for deserialization
+        bSuccess = UStructForgeHandler::DeserializeJsonObjectStringToUStruct(JsonString, Struct, StructAddress);
+    }
+    
+    *(bool*)RESULT_PARAM = bSuccess;
+}
+
+bool UStructForgeBlueprintLibrary::StructToJsonStringWithConfig(const UStruct* StructIn, class UStructForgeConfig* Config, FString& JsonString, bool bPrettyPrint)
+{
+    // This function body is just a placeholder - actual implementation is in execStructToJsonStringWithConfig
+    return false;
+}
+
+DEFINE_FUNCTION(UStructForgeBlueprintLibrary::execStructToJsonStringWithConfig)
+{
+    // Step through the stack to get the input struct parameter
+    Stack.MostRecentPropertyAddress = nullptr;
+    Stack.Step(Stack.Object, nullptr);
+    FStructProperty* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
+    void* StructAddress = Stack.MostRecentPropertyAddress;
+    
+    // Get the config parameter
+    P_GET_OBJECT(UStructForgeConfig, Config);
+    
+    // Get the output JSON string parameter
+    P_GET_PROPERTY_REF(FStrProperty, JsonString);
+    
+    // Get the pretty print parameter
+    P_GET_UBOOL(bPrettyPrint);
+    
+    P_FINISH;
+    
+    // Perform the serialization with config
+    bool bSuccess = false;
+    if (StructProperty && StructAddress)
+    {
+        UScriptStruct* Struct = StructProperty->Struct;
+        
+        // If we have a config, use it to customize serialization
+        if (Config)
+        {
+            // TODO: Implement config-based serialization using the mappings
+            // For now, fallback to metadata-based serialization
+            bSuccess = UStructForgeHandler::SerializeUStructToJsonObjectStringWithMetadata(Struct, StructAddress, JsonString, bPrettyPrint);
+        }
+        else
+        {
+            // No config, use standard serialization
+            bSuccess = FJsonObjectConverter::UStructToJsonObjectString(Struct, StructAddress, JsonString, 0, 0, 0, nullptr, bPrettyPrint);
+        }
+    }
+    
+    *(bool*)RESULT_PARAM = bSuccess;
+}
+
+bool UStructForgeBlueprintLibrary::JsonStringToStructWithConfig(const FString& JsonString, class UStructForgeConfig* Config, UStruct* StructOut)
+{
+    // This function body is just a placeholder - actual implementation is in execJsonStringToStructWithConfig
+    return false;
+}
+
+DEFINE_FUNCTION(UStructForgeBlueprintLibrary::execJsonStringToStructWithConfig)
+{
+    // Get the JSON string parameter
+    P_GET_PROPERTY(FStrProperty, JsonString);
+    
+    // Get the config parameter
+    P_GET_OBJECT(UStructForgeConfig, Config);
+    
+    // Step through the stack to get the output struct parameter
+    Stack.MostRecentPropertyAddress = nullptr;
+    Stack.Step(Stack.Object, nullptr);
+    FStructProperty* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
+    void* StructAddress = Stack.MostRecentPropertyAddress;
+    
+    P_FINISH;
+    
+    // Perform the deserialization with config
+    bool bSuccess = false;
+    if (StructProperty && StructAddress)
+    {
+        UScriptStruct* Struct = StructProperty->Struct;
+        
+        // If we have a config, use it to customize deserialization
+        if (Config)
+        {
+            // TODO: Implement config-based deserialization using the mappings
+            // For now, fallback to metadata-based deserialization
+            bSuccess = UStructForgeHandler::DeserializeJsonObjectStringToUStructWithMetadata(JsonString, Struct, StructAddress);
+        }
+        else
+        {
+            // No config, use standard deserialization
+            bSuccess = UStructForgeHandler::DeserializeJsonObjectStringToUStruct(JsonString, Struct, StructAddress);
+        }
+    }
+    
+    *(bool*)RESULT_PARAM = bSuccess;
 }

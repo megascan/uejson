@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRUCTFORGE Complete API Documentation</title>
+    <link rel="icon" type="image/png" href="../STRUCTFORGE/Resources/Icon128.png">
+    <style>
+        :root {
+            --primary: #0073e6;
+            --primary-dark: #005bb5;
+            --secondary: #1a1a1a;
+            --accent: #00d4aa;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #6c757d;
+            --border: #e0e0e0;
+            --code-bg: #f4f4f4;
+            --success: #28a745;
+            --warning: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 1rem auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.95);
+            color: var(--text);
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 80px;
+            z-index: 100;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .filter-tab:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-count {
+            background: rgba(0,0,0,0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+            margin-left: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Function Grid */
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        /* Function Card */
+        .function-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .function-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .function-number {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .function-header {
+            margin-bottom: 1rem;
+        }
+
+        .function-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .function-cpp-name {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .function-category {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            background: var(--bg);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-right: 0.5rem;
+        }
+
+        .function-type {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .function-type.cpp-only {
+            background: var(--secondary);
+        }
+
+        .function-description {
+            color: var(--text);
+            margin: 1rem 0;
+            line-height: 1.5;
+        }
+
+        /* Parameters */
+        .params-section {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 8px;
+        }
+
+        .params-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .param {
+            display: flex;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .param-name {
+            font-family: monospace;
+            color: var(--primary);
+            font-weight: 500;
+            min-width: 150px;
+        }
+
+        .param-type {
+            font-family: monospace;
+            color: var(--text-light);
+            margin: 0 1rem;
+        }
+
+        .param-desc {
+            color: var(--text);
+        }
+
+        /* Code Block */
+        .code-section {
+            margin-top: 1rem;
+        }
+
+        .code-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            padding: 0.2rem 0.6rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--text);
+        }
+
+        .tag.blueprint {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #1976d2;
+        }
+
+        .tag.pure {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .tag.async {
+            background: #fff3e0;
+            border-color: #ff9800;
+            color: #f57c00;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .function-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+        }
+
+        /* Category Sections */
+        .category-section {
+            margin-bottom: 3rem;
+        }
+
+        .category-header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            color: var(--text);
+        }
+
+        .category-description {
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        /* Hide elements for filtering */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="../STRUCTFORGE/Resources/Icon128.png" alt="STRUCTFORGE" style="height: 40px; width: 40px; margin-right: 10px;">
+                STRUCTFORGE Complete API Reference
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">53+</div>
+                    <div class="stat-label">Blueprint Nodes</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">11</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">USTRUCTs</div>
+                </div>
+            </div>
+        </div>
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search functions by name or keyword...">
+        </div>
+    </header>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <div class="filter-tab active" data-filter="all">All Functions<span class="filter-count">53+</span></div>
+        <div class="filter-tab" data-filter="core">Core<span class="filter-count">3</span></div>
+        <div class="filter-tab" data-filter="getters">Getters<span class="filter-count">8</span></div>
+        <div class="filter-tab" data-filter="setters">Setters<span class="filter-count">8</span></div>
+        <div class="filter-tab" data-filter="arrays">Arrays<span class="filter-count">8</span></div>
+        <div class="filter-tab" data-filter="structs">Structs<span class="filter-count">8</span></div>
+        <div class="filter-tab" data-filter="fileio">File I/O<span class="filter-count">6</span></div>
+        <div class="filter-tab" data-filter="utilities">Utilities<span class="filter-count">9</span></div>
+        <div class="filter-tab" data-filter="testing">Testing<span class="filter-count">3</span></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Core Operations Section -->
+        <div class="category-section" data-category="core">
+            <div class="category-header">
+                <h2 class="category-title">Core JSON Operations</h2>
+                <p class="category-description">Fundamental JSON object creation and manipulation</p>
+            </div>
+            <div class="function-grid">
+                <!-- 1. Create Empty JSON Object -->
+                <div class="function-card" data-category="core">
+                    <span class="function-number">#1</span>
+                    <div class="function-header">
+                        <div class="function-name">Create Empty JSON Object</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::CreateJsonObject()</div>
+                        <span class="function-category">Core</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Creates a new, empty JSON object ready to be populated with data.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>// Method 1: Direct creation
+UStructForgeJsonObject* JsonObj = UStructForgeJsonObject::CreateEmpty();
+
+// Method 2: Via Blueprint Library
+UStructForgeJsonObject* JsonObj = UStructForgeBlueprintLibrary::CreateJsonObject();</pre>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag blueprint">Blueprint Callable</span>
+                    </div>
+                </div>
+
+                <!-- 2. Parse JSON String -->
+                <div class="function-card" data-category="core">
+                    <span class="function-number">#2</span>
+                    <div class="function-header">
+                        <div class="function-name">Parse JSON String</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::ParseJsonString()</div>
+                        <span class="function-category">Core</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Parses a JSON string into a JSON object for manipulation.
+                    </div>
+                    <div class="params-section">
+                        <div class="params-title">Parameters:</div>
+                        <div class="param">
+                            <span class="param-name">JsonString</span>
+                            <span class="param-type">FString</span>
+                            <span class="param-desc">JSON string to parse</span>
+                        </div>
+                        <div class="param">
+                            <span class="param-name">OutJsonObject</span>
+                            <span class="param-type">UStructForgeJsonObject*&</span>
+                            <span class="param-desc">Resulting JSON object</span>
+                        </div>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FString JsonString = TEXT("{\"name\":\"John\",\"age\":30}");
+UStructForgeJsonObject* JsonObj = nullptr;
+bool bSuccess = UStructForgeBlueprintLibrary::ParseJsonString(JsonString, JsonObj);
+if (bSuccess && JsonObj)
+{
+    // Use JsonObj
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. JSON Object to String -->
+                <div class="function-card" data-category="core">
+                    <span class="function-number">#3</span>
+                    <div class="function-header">
+                        <div class="function-name">JSON Object to String</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::JsonObjectToString()</div>
+                        <span class="function-category">Core</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Converts a JSON object to its string representation.
+                    </div>
+                    <div class="params-section">
+                        <div class="params-title">Parameters:</div>
+                        <div class="param">
+                            <span class="param-name">JsonObject</span>
+                            <span class="param-type">UStructForgeJsonObject*</span>
+                            <span class="param-desc">JSON object to convert</span>
+                        </div>
+                        <div class="param">
+                            <span class="param-name">bPrettyPrint</span>
+                            <span class="param-type">bool</span>
+                            <span class="param-desc">Format with indentation</span>
+                        </div>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>UStructForgeJsonObject* JsonObj = CreateJsonObject();
+FString JsonString = UStructForgeBlueprintLibrary::JsonObjectToString(JsonObj, true);</pre>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag blueprint">Blueprint Pure</span>
+                        <span class="tag">Compact Node</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Getters Section -->
+        <div class="category-section" data-category="getters">
+            <div class="category-header">
+                <h2 class="category-title">Getter Functions</h2>
+                <p class="category-description">Retrieve values from JSON objects</p>
+            </div>
+            <div class="function-grid">
+                <!-- 4. Get String from JSON -->
+                <div class="function-card" data-category="getters">
+                    <span class="function-number">#4</span>
+                    <div class="function-header">
+                        <div class="function-name">Get String from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonString()</div>
+                        <span class="function-category">Getters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Retrieves a string value from a JSON object by key.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>bool bFound;
+FString Name = UStructForgeBlueprintLibrary::GetJsonString(
+    JsonObj, TEXT("name"), TEXT("Unknown"), bFound);</pre>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag pure">Blueprint Pure</span>
+                    </div>
+                </div>
+
+                <!-- 5. Get Integer from JSON -->
+                <div class="function-card" data-category="getters">
+                    <span class="function-number">#5</span>
+                    <div class="function-header">
+                        <div class="function-name">Get Integer from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonInt()</div>
+                        <span class="function-category">Getters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Retrieves an integer value from a JSON object.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>bool bFound;
+int32 Age = UStructForgeBlueprintLibrary::GetJsonInt(JsonObj, TEXT("age"), 0, bFound);</pre>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag pure">Blueprint Pure</span>
+                    </div>
+                </div>
+
+                <!-- 6. Get Float from JSON -->
+                <div class="function-card" data-category="getters">
+                    <span class="function-number">#6</span>
+                    <div class="function-header">
+                        <div class="function-name">Get Float from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonFloat()</div>
+                        <span class="function-category">Getters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Retrieves a floating-point value from a JSON object.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>bool bFound;
+float Price = UStructForgeBlueprintLibrary::GetJsonFloat(JsonObj, TEXT("price"), 0.0f, bFound);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Get Boolean from JSON -->
+                <div class="function-card" data-category="getters">
+                    <span class="function-number">#7</span>
+                    <div class="function-header">
+                        <div class="function-name">Get Boolean from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonBool()</div>
+                        <span class="function-category">Getters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Retrieves a boolean value from a JSON object.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>bool bFound;
+bool bIsActive = UStructForgeBlueprintLibrary::GetJsonBool(JsonObj, TEXT("active"), false, bFound);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Get Text from JSON -->
+                <div class="function-card" data-category="getters">
+                    <span class="function-number">#8</span>
+                    <div class="function-header">
+                        <div class="function-name">Get Text from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonText()</div>
+                        <span class="function-category">Getters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Retrieves an FText value from a JSON object.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>bool bFound;
+FText Description = UStructForgeBlueprintLibrary::GetJsonText(
+    JsonObj, TEXT("description"), FText::GetEmpty(), bFound);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. Get Vector from JSON -->
+                <div class="function-card" data-category="getters">
+                    <span class="function-number">#9</span>
+                    <div class="function-header">
+                        <div class="function-name">Get Vector from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonVector()</div>
+                        <span class="function-category">Getters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Retrieves an FVector from JSON (expects X, Y, Z fields).
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>bool bFound;
+FVector Position = UStructForgeBlueprintLibrary::GetJsonVector(
+    JsonObj, TEXT("position"), FVector::ZeroVector, bFound);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10. Get Rotator from JSON -->
+                <div class="function-card" data-category="getters">
+                    <span class="function-number">#10</span>
+                    <div class="function-header">
+                        <div class="function-name">Get Rotator from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonRotator()</div>
+                        <span class="function-category">Getters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Retrieves an FRotator from JSON (expects Pitch, Yaw, Roll fields).
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>bool bFound;
+FRotator Rotation = UStructForgeBlueprintLibrary::GetJsonRotator(
+    JsonObj, TEXT("rotation"), FRotator::ZeroRotator, bFound);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 11. Get Transform from JSON -->
+                <div class="function-card" data-category="getters">
+                    <span class="function-number">#11</span>
+                    <div class="function-header">
+                        <div class="function-name">Get Transform from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonTransform()</div>
+                        <span class="function-category">Getters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Retrieves an FTransform from JSON (expects Location, Rotation, Scale fields).
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>bool bFound;
+FTransform Transform = UStructForgeBlueprintLibrary::GetJsonTransform(
+    JsonObj, TEXT("transform"), FTransform::Identity, bFound);</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setters Section -->
+        <div class="category-section" data-category="setters">
+            <div class="category-header">
+                <h2 class="category-title">Setter Functions</h2>
+                <p class="category-description">Set values in JSON objects</p>
+            </div>
+            <div class="function-grid">
+                <!-- 12-19: All Setter Functions -->
+                <div class="function-card" data-category="setters">
+                    <span class="function-number">#12</span>
+                    <div class="function-header">
+                        <div class="function-name">Set String in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonString()</div>
+                        <span class="function-category">Setters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>UStructForgeBlueprintLibrary::SetJsonString(JsonObj, TEXT("name"), TEXT("John Doe"));</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="setters">
+                    <span class="function-number">#13</span>
+                    <div class="function-header">
+                        <div class="function-name">Set Integer in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonInt()</div>
+                        <span class="function-category">Setters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>UStructForgeBlueprintLibrary::SetJsonInt(JsonObj, TEXT("score"), 1000);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="setters">
+                    <span class="function-number">#14</span>
+                    <div class="function-header">
+                        <div class="function-name">Set Float in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonFloat()</div>
+                        <span class="function-category">Setters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>UStructForgeBlueprintLibrary::SetJsonFloat(JsonObj, TEXT("health"), 75.5f);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="setters">
+                    <span class="function-number">#15</span>
+                    <div class="function-header">
+                        <div class="function-name">Set Boolean in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonBool()</div>
+                        <span class="function-category">Setters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>UStructForgeBlueprintLibrary::SetJsonBool(JsonObj, TEXT("isAlive"), true);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="setters">
+                    <span class="function-number">#16</span>
+                    <div class="function-header">
+                        <div class="function-name">Set Text in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonText()</div>
+                        <span class="function-category">Setters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FText LocalizedText = NSLOCTEXT("Game", "Welcome", "Welcome to the game!");
+UStructForgeBlueprintLibrary::SetJsonText(JsonObj, TEXT("message"), LocalizedText);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="setters">
+                    <span class="function-number">#17</span>
+                    <div class="function-header">
+                        <div class="function-name">Set Vector in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonVector()</div>
+                        <span class="function-category">Setters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FVector Position(100.0f, 200.0f, 50.0f);
+UStructForgeBlueprintLibrary::SetJsonVector(JsonObj, TEXT("spawn_position"), Position);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="setters">
+                    <span class="function-number">#18</span>
+                    <div class="function-header">
+                        <div class="function-name">Set Rotator in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonRotator()</div>
+                        <span class="function-category">Setters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FRotator Rotation(0.0f, 90.0f, 0.0f);
+UStructForgeBlueprintLibrary::SetJsonRotator(JsonObj, TEXT("spawn_rotation"), Rotation);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="setters">
+                    <span class="function-number">#19</span>
+                    <div class="function-header">
+                        <div class="function-name">Set Transform in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonTransform()</div>
+                        <span class="function-category">Setters</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FTransform Transform(FRotator(0, 45, 0), FVector(100, 100, 0), FVector(1, 1, 1));
+UStructForgeBlueprintLibrary::SetJsonTransform(JsonObj, TEXT("world_transform"), Transform);</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Array Operations Section -->
+        <div class="category-section" data-category="arrays">
+            <div class="category-header">
+                <h2 class="category-title">Array Operations</h2>
+                <p class="category-description">Handle JSON arrays of various types</p>
+            </div>
+            <div class="function-grid">
+                <!-- 20-27: Array Operations -->
+                <div class="function-card" data-category="arrays">
+                    <span class="function-number">#20</span>
+                    <div class="function-header">
+                        <div class="function-name">Get String Array from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonStringArray()</div>
+                        <span class="function-category">Arrays</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>TArray<FString> Tags;
+bool bSuccess = UStructForgeBlueprintLibrary::GetJsonStringArray(JsonObj, TEXT("tags"), Tags);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="arrays">
+                    <span class="function-number">#21</span>
+                    <div class="function-header">
+                        <div class="function-name">Set String Array in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonStringArray()</div>
+                        <span class="function-category">Arrays</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>TArray<FString> Tags = {TEXT("RPG"), TEXT("Adventure"), TEXT("Multiplayer")};
+UStructForgeBlueprintLibrary::SetJsonStringArray(JsonObj, TEXT("tags"), Tags);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="arrays">
+                    <span class="function-number">#22</span>
+                    <div class="function-header">
+                        <div class="function-name">Get Int Array from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonIntArray()</div>
+                        <span class="function-category">Arrays</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>TArray<int32> Scores;
+bool bSuccess = UStructForgeBlueprintLibrary::GetJsonIntArray(JsonObj, TEXT("scores"), Scores);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="arrays">
+                    <span class="function-number">#23</span>
+                    <div class="function-header">
+                        <div class="function-name">Set Int Array in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonIntArray()</div>
+                        <span class="function-category">Arrays</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>TArray<int32> Levels = {1, 5, 10, 15, 20};
+UStructForgeBlueprintLibrary::SetJsonIntArray(JsonObj, TEXT("unlocked_levels"), Levels);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="arrays">
+                    <span class="function-number">#24</span>
+                    <div class="function-header">
+                        <div class="function-name">Get Float Array from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonFloatArray()</div>
+                        <span class="function-category">Arrays</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>TArray<float> Weights;
+bool bSuccess = UStructForgeBlueprintLibrary::GetJsonFloatArray(JsonObj, TEXT("weights"), Weights);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="arrays">
+                    <span class="function-number">#25</span>
+                    <div class="function-header">
+                        <div class="function-name">Set Float Array in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonFloatArray()</div>
+                        <span class="function-category">Arrays</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>TArray<float> Multipliers = {1.0f, 1.5f, 2.0f, 2.5f};
+UStructForgeBlueprintLibrary::SetJsonFloatArray(JsonObj, TEXT("damage_multipliers"), Multipliers);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="arrays">
+                    <span class="function-number">#26</span>
+                    <div class="function-header">
+                        <div class="function-name">Get Bool Array from JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetJsonBoolArray()</div>
+                        <span class="function-category">Arrays</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>TArray<bool> Flags;
+bool bSuccess = UStructForgeBlueprintLibrary::GetJsonBoolArray(JsonObj, TEXT("feature_flags"), Flags);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="arrays">
+                    <span class="function-number">#27</span>
+                    <div class="function-header">
+                        <div class="function-name">Set Bool Array in JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SetJsonBoolArray()</div>
+                        <span class="function-category">Arrays</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>TArray<bool> Unlocked = {true, true, false, false, true};
+UStructForgeBlueprintLibrary::SetJsonBoolArray(JsonObj, TEXT("achievements"), Unlocked);</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Struct Serialization Section -->
+        <div class="category-section" data-category="structs">
+            <div class="category-header">
+                <h2 class="category-title">Struct Serialization</h2>
+                <p class="category-description">Serialize any USTRUCT to/from JSON - The core power of STRUCTFORGE!</p>
+            </div>
+            <div class="function-grid">
+                <!-- 28-35: Struct Operations -->
+                <div class="function-card" data-category="structs">
+                    <span class="function-number">#28</span>
+                    <div class="function-header">
+                        <div class="function-name">⭐ Struct to JSON String (Generic)</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::StructToJsonString()</div>
+                        <span class="function-category">Structs</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        THE POWER OF STRUCTFORGE! Serialize ANY USTRUCT to JSON without modification. 
+                        In Blueprint, this node accepts wildcard struct pins!
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>// Define ANY struct
+USTRUCT()
+struct FMyGameData
+{
+    GENERATED_BODY()
+    
+    UPROPERTY()
+    FString PlayerName;
+    
+    UPROPERTY()
+    int32 Score;
+    
+    UPROPERTY()
+    TArray<FString> Inventory;
+};
+
+// Serialize it without any setup!
+FMyGameData GameData;
+GameData.PlayerName = TEXT("Hero");
+GameData.Score = 5000;
+GameData.Inventory = {TEXT("Sword"), TEXT("Shield")};
+
+FString JsonString;
+bool bSuccess = FJsonObjectConverter::UStructToJsonObjectString(
+    GameData, JsonString, 0, 0, 0, nullptr, true);</pre>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag blueprint">Wildcard Support</span>
+                        <span class="tag">CustomThunk</span>
+                        <span class="tag">Any USTRUCT</span>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="structs">
+                    <span class="function-number">#29</span>
+                    <div class="function-header">
+                        <div class="function-name">⭐ JSON String to Struct (Generic)</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::JsonStringToStruct()</div>
+                        <span class="function-category">Structs</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Deserialize JSON to ANY USTRUCT. Wildcard support in Blueprint!
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FString JsonString = TEXT("{\"PlayerName\":\"Hero\",\"Score\":5000}");
+FMyGameData LoadedData;
+
+bool bSuccess = FJsonObjectConverter::JsonObjectStringToUStruct(
+    JsonString, &LoadedData, 0, 0);</pre>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag blueprint">Wildcard Support</span>
+                        <span class="tag">CustomThunk</span>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="structs">
+                    <span class="function-number">#30-35</span>
+                    <div class="function-header">
+                        <div class="function-name">Example Struct Serializers</div>
+                        <div class="function-cpp-name">Various specialized functions</div>
+                        <span class="function-category">Structs</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Example implementations for PlayerData, GameSettings, InventoryItem structs.
+                        These demonstrate how to use the generic serialization with specific structs.
+                    </div>
+                    <ul style="margin: 1rem 0; line-height: 1.8;">
+                        <li>#30: Player Data to JSON</li>
+                        <li>#31: JSON to Player Data</li>
+                        <li>#32: Game Settings to JSON</li>
+                        <li>#33: JSON to Game Settings</li>
+                        <li>#34: Inventory Item to JSON</li>
+                        <li>#35: JSON to Inventory Item</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- File I/O Section -->
+        <div class="category-section" data-category="fileio">
+            <div class="category-header">
+                <h2 class="category-title">File I/O Operations</h2>
+                <p class="category-description">Save and load JSON files with async support</p>
+            </div>
+            <div class="function-grid">
+                <!-- 36-41: File Operations -->
+                <div class="function-card" data-category="fileio">
+                    <span class="function-number">#36</span>
+                    <div class="function-header">
+                        <div class="function-name">Save JSON to File</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::SaveJsonToFile()</div>
+                        <span class="function-category">File I/O</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Saves a JSON string to a file on disk.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FString JsonString = TEXT("{\"level\":5,\"xp\":1500}");
+FString FilePath = FPaths::ProjectSavedDir() / TEXT("GameData.json");
+bool bSuccess = UStructForgeBlueprintLibrary::SaveJsonToFile(JsonString, FilePath);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="fileio">
+                    <span class="function-number">#37</span>
+                    <div class="function-header">
+                        <div class="function-name">Load JSON from File</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::LoadJsonFromFile()</div>
+                        <span class="function-category">File I/O</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Loads a JSON string from a file.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FString FilePath = FPaths::ProjectSavedDir() / TEXT("GameData.json");
+FString JsonString;
+bool bSuccess = UStructForgeBlueprintLibrary::LoadJsonFromFile(FilePath, JsonString);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="fileio">
+                    <span class="function-number">#38-41</span>
+                    <div class="function-header">
+                        <div class="function-name">Specialized File I/O</div>
+                        <div class="function-cpp-name">Various file save/load functions</div>
+                        <span class="function-category">File I/O</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Convenience functions for saving/loading specific struct types.
+                    </div>
+                    <ul style="margin: 1rem 0; line-height: 1.8;">
+                        <li>#38: Save Player Data to File</li>
+                        <li>#39: Load Player Data from File</li>
+                        <li>#40: Save Game Settings to File</li>
+                        <li>#41: Load Game Settings from File</li>
+                    </ul>
+                    <div class="tags">
+                        <span class="tag async">Async Available</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Utilities Section -->
+        <div class="category-section" data-category="utilities">
+            <div class="category-header">
+                <h2 class="category-title">Utility Functions</h2>
+                <p class="category-description">JSON validation, formatting, and manipulation utilities</p>
+            </div>
+            <div class="function-grid">
+                <!-- 42-48: Utilities -->
+                <div class="function-card" data-category="utilities">
+                    <span class="function-number">#42</span>
+                    <div class="function-header">
+                        <div class="function-name">Is Valid JSON?</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::IsValidJson()</div>
+                        <span class="function-category">Utilities</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Validates whether a string contains valid JSON.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FString TestJson = TEXT("{\"valid\":true}");
+bool bIsValid = UStructForgeBlueprintLibrary::IsValidJson(TestJson);</pre>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag pure">Blueprint Pure</span>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="utilities">
+                    <span class="function-number">#43</span>
+                    <div class="function-header">
+                        <div class="function-name">Get All Keys</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::GetAllJsonKeys()</div>
+                        <span class="function-category">Utilities</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Returns all keys in a JSON object.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>TArray<FString> Keys = UStructForgeBlueprintLibrary::GetAllJsonKeys(JsonObj);
+for (const FString& Key : Keys)
+{
+    UE_LOG(LogTemp, Log, TEXT("Key: %s"), *Key);
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="utilities">
+                    <span class="function-number">#44</span>
+                    <div class="function-header">
+                        <div class="function-name">Has Key?</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::HasJsonKey()</div>
+                        <span class="function-category">Utilities</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>bool bHasName = UStructForgeBlueprintLibrary::HasJsonKey(JsonObj, TEXT("name"));</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="utilities">
+                    <span class="function-number">#45</span>
+                    <div class="function-header">
+                        <div class="function-name">Remove Key</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::RemoveJsonKey()</div>
+                        <span class="function-category">Utilities</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>bool bRemoved = UStructForgeBlueprintLibrary::RemoveJsonKey(JsonObj, TEXT("temp_data"));</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="utilities">
+                    <span class="function-number">#46</span>
+                    <div class="function-header">
+                        <div class="function-name">Merge JSON Objects</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::MergeJsonObjects()</div>
+                        <span class="function-category">Utilities</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Merges two JSON objects with conflict resolution.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>UStructForgeJsonObject* MergedObj = UStructForgeBlueprintLibrary::MergeJsonObjects(
+    BaseObj, UpdateObj, true /* overwrite existing */);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="utilities">
+                    <span class="function-number">#47</span>
+                    <div class="function-header">
+                        <div class="function-name">Pretty Print JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::PrettyPrintJson()</div>
+                        <span class="function-category">Utilities</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Formats JSON with indentation for readability.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FString CompactJson = TEXT("{\"a\":1,\"b\":2}");
+FString PrettyJson = UStructForgeBlueprintLibrary::PrettyPrintJson(CompactJson);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="utilities">
+                    <span class="function-number">#48</span>
+                    <div class="function-header">
+                        <div class="function-name">Minify JSON</div>
+                        <div class="function-cpp-name">UStructForgeBlueprintLibrary::MinifyJson()</div>
+                        <span class="function-category">Utilities</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Removes unnecessary whitespace to minimize JSON size.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FString PrettyJson = TEXT("{\n    \"a\": 1,\n    \"b\": 2\n}");
+FString MinifiedJson = UStructForgeBlueprintLibrary::MinifyJson(PrettyJson);</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="function-card" data-category="utilities">
+                    <span class="function-number">Extra</span>
+                    <div class="function-header">
+                        <div class="function-name">Get JSON Depth</div>
+                        <div class="function-cpp-name">UStructForgeHandler::GetJsonDepth()</div>
+                        <span class="function-category">Utilities</span>
+                        <span class="function-type cpp-only">C++ Only</span>
+                    </div>
+                    <div class="function-description">
+                        Calculate the depth of nested JSON objects.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FString DeepJson = TEXT("{\"a\":{\"b\":{\"c\":{\"d\":1}}}}");
+int32 Depth = UStructForgeHandler::GetJsonDepth(DeepJson);
+// Returns 4</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing Section -->
+        <div class="category-section" data-category="testing">
+            <div class="category-header">
+                <h2 class="category-title">Test Data Generators</h2>
+                <p class="category-description">Generate sample data for testing</p>
+            </div>
+            <div class="function-grid">
+                <!-- 49-51: Test Data -->
+                <div class="function-card" data-category="testing">
+                    <span class="function-number">#49-51</span>
+                    <div class="function-header">
+                        <div class="function-name">Create Sample Data</div>
+                        <div class="function-cpp-name">Various create functions</div>
+                        <span class="function-category">Testing</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Generate sample data for testing serialization.
+                    </div>
+                    <ul style="margin: 1rem 0; line-height: 1.8;">
+                        <li>#49: Create Sample Player Data</li>
+                        <li>#50: Create Sample Game Settings</li>
+                        <li>#51: Create Sample Inventory</li>
+                    </ul>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>// Generate test data
+FPlayerData SampleData = UStructForgeBlueprintLibrary::CreateSamplePlayerData();
+FGameSettings SampleSettings = UStructForgeBlueprintLibrary::CreateSampleGameSettings();
+TArray<FInventoryItem> SampleInventory = UStructForgeBlueprintLibrary::CreateSampleInventory();</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced C++ Section -->
+        <div class="category-section" data-category="advanced">
+            <div class="category-header">
+                <h2 class="category-title">Advanced Features</h2>
+                <p class="category-description">Power features for advanced use cases</p>
+            </div>
+            <div class="function-grid">
+                <!-- 52-53: Config-based -->
+                <div class="function-card" data-category="advanced">
+                    <span class="function-number">#52-53</span>
+                    <div class="function-header">
+                        <div class="function-name">Config-Based Serialization</div>
+                        <div class="function-cpp-name">StructToJsonStringWithConfig / JsonStringToStructWithConfig</div>
+                        <span class="function-category">Advanced</span>
+                        <span class="function-type">Blueprint</span>
+                    </div>
+                    <div class="function-description">
+                        Use Data Asset configurations to control field mapping and serialization behavior.
+                    </div>
+                    <div class="tags">
+                        <span class="tag">CustomThunk</span>
+                        <span class="tag">Data Assets</span>
+                    </div>
+                </div>
+
+                <!-- Async Operations -->
+                <div class="function-card" data-category="advanced">
+                    <span class="function-number">C++ Only</span>
+                    <div class="function-header">
+                        <div class="function-name">Async Operations</div>
+                        <div class="function-cpp-name">SerializePlayerDataAsync / LoadPlayerDataAsync</div>
+                        <span class="function-category">Advanced</span>
+                        <span class="function-type cpp-only">C++ Only</span>
+                    </div>
+                    <div class="function-description">
+                        Perform JSON operations on background threads with completion delegates.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>FOnStructForgeAsyncComplete OnComplete;
+OnComplete.BindLambda([](bool bSuccess, const FString& Result)
+{
+    if (bSuccess)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Async operation completed: %s"), *Result);
+    }
+});
+
+UStructForgeHandler::SerializePlayerDataAsync(PlayerData, FilePath, OnComplete);</pre>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag async">Thread-Safe</span>
+                        <span class="tag">Background Processing</span>
+                    </div>
+                </div>
+
+                <!-- Metadata-Based Serialization -->
+                <div class="function-card" data-category="advanced">
+                    <span class="function-number">C++ Only</span>
+                    <div class="function-header">
+                        <div class="function-name">Metadata-Based Serialization</div>
+                        <div class="function-cpp-name">SerializeUStructToJsonObjectStringWithMetadata</div>
+                        <span class="function-category">Advanced</span>
+                        <span class="function-type cpp-only">C++ Only</span>
+                    </div>
+                    <div class="function-description">
+                        Control JSON serialization using UPROPERTY metadata tags.
+                    </div>
+                    <div class="code-section">
+                        <div class="code-label">C++ Example:</div>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            <pre>USTRUCT()
+struct FCustomSerializedStruct
+{
+    GENERATED_BODY()
+    
+    // Custom JSON field name
+    UPROPERTY(meta=(JsonFieldName="player_name"))
+    FString PlayerName;
+    
+    // Exclude from JSON
+    UPROPERTY(meta=(JsonSerialize="false"))
+    FString InternalData;
+    
+    UPROPERTY()
+    int32 Score;
+};
+
+// Use metadata-aware serialization
+FString JsonString;
+UStructForgeHandler::SerializeUStructToJsonObjectStringWithMetadata(
+    FCustomSerializedStruct::StaticStruct(),
+    &MyStruct,
+    JsonString,
+    true
+);</pre>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag">Field Mapping</span>
+                        <span class="tag">Selective Serialization</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.parentElement.querySelector('pre');
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            });
+        }
+
+        // Filter functionality
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const functionCards = document.querySelectorAll('.function-card');
+        const categorySections = document.querySelectorAll('.category-section');
+
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const filter = tab.dataset.filter;
+                
+                // Update active tab
+                filterTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show/hide sections and cards
+                if (filter === 'all') {
+                    categorySections.forEach(section => section.classList.remove('hidden'));
+                    functionCards.forEach(card => card.classList.remove('hidden'));
+                } else {
+                    categorySections.forEach(section => {
+                        if (section.dataset.category === filter) {
+                            section.classList.remove('hidden');
+                        } else {
+                            section.classList.add('hidden');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            functionCards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+            
+            // Show all sections when searching
+            if (searchTerm) {
+                categorySections.forEach(section => section.classList.remove('hidden'));
+            }
+        });
+    </script>
+</body>
+</html>

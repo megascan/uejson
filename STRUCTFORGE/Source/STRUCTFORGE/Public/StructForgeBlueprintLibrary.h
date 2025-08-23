@@ -157,4 +157,24 @@ public:
     
     UFUNCTION(BlueprintCallable, Category = "StructForge|Testing", meta = (DisplayName = "Create Sample Inventory"))
     static TArray<FInventoryItem> CreateSampleInventory();
+    
+    // Generic struct serialization with wildcard support
+    UFUNCTION(BlueprintCallable, Category = "StructForge|Core", CustomThunk, meta = (DisplayName = "Struct to JSON String", CustomStructureParam = "StructIn", CallInEditor = "true"))
+    static bool StructToJsonString(const UStruct* StructIn, FString& JsonString, bool bPrettyPrint = false);
+    DECLARE_FUNCTION(execStructToJsonString);
+    
+    UFUNCTION(BlueprintCallable, Category = "StructForge|Core", CustomThunk, meta = (DisplayName = "JSON String to Struct", CustomStructureParam = "StructOut", CallInEditor = "true"))
+    static bool JsonStringToStruct(const FString& JsonString, UStruct* StructOut);
+    DECLARE_FUNCTION(execJsonStringToStruct);
+    
+    // Configuration-based serialization
+    UFUNCTION(BlueprintCallable, Category = "StructForge|Config", CustomThunk,
+              meta = (DisplayName = "Struct to JSON String (With Config)", CustomStructureParam = "StructIn", CallInEditor = "true"))
+    static bool StructToJsonStringWithConfig(const UStruct* StructIn, class UStructForgeConfig* Config, FString& JsonString, bool bPrettyPrint = false);
+    DECLARE_FUNCTION(execStructToJsonStringWithConfig);
+    
+    UFUNCTION(BlueprintCallable, Category = "StructForge|Config", CustomThunk,
+              meta = (DisplayName = "JSON String to Struct (With Config)", CustomStructureParam = "StructOut", CallInEditor = "true"))
+    static bool JsonStringToStructWithConfig(const FString& JsonString, class UStructForgeConfig* Config, UStruct* StructOut);
+    DECLARE_FUNCTION(execJsonStringToStructWithConfig);
 };

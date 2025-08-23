@@ -1,0 +1,8 @@
+{
+	"BuildId": "43139311",
+	"Modules": 
+	{
+		"STRUCTFORGE": "UnrealEditor-STRUCTFORGE.dll",
+		"STRUCTFORGEEditor": "UnrealEditor-STRUCTFORGEEditor.dll"
+	}
+}

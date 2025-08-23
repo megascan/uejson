@@ -1,0 +1,15 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforge\\private\\structforgeconfig.cpp",
+        "ProvidedModule": "",
+        "PCH": "d:\\unreal projects\\jsontesting\\intermediate\\build\\win64\\x64\\jsontestingeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\structforge\\definitions.structforge.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforge\\public\\structforgeconfig.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\intermediate\\build\\win64\\unrealeditor\\inc\\structforge\\uht\\structforgeconfig.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

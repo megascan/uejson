@@ -1,0 +1,33 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforge\\private\\structforgeblueprintlibrary.cpp",
+        "ProvidedModule": "",
+        "PCH": "d:\\unreal projects\\jsontesting\\intermediate\\build\\win64\\x64\\jsontestingeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\structforge\\definitions.structforge.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforge\\public\\structforgeblueprintlibrary.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforge\\public\\structforgetypes.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\intermediate\\build\\win64\\unrealeditor\\inc\\structforge\\uht\\structforgetypes.generated.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\intermediate\\build\\win64\\unrealeditor\\inc\\structforge\\uht\\structforgeblueprintlibrary.generated.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforge\\public\\structforgejsonobject.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\runtime\\coreuobject\\public\\uobject\\noexporttypes.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\runtime\\coreuobject\\public\\uobject\\propertyaccessutil.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\runtime\\coreuobject\\public\\serialization\\testundeclaredscriptstructobjectreferences.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\runtime\\core\\public\\math\\unitconversion.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\runtime\\core\\public\\math\\unitconversion.inl",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\runtime\\core\\public\\internationalization\\polyglottextdata.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\intermediate\\build\\win64\\unrealeditor\\inc\\structforge\\uht\\structforgejsonobject.generated.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforge\\public\\structforgehandler.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\intermediate\\build\\win64\\unrealeditor\\inc\\structforge\\uht\\structforgehandler.generated.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforge\\public\\structforgeconfig.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\intermediate\\build\\win64\\unrealeditor\\inc\\structforge\\uht\\structforgeconfig.generated.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforge\\public\\structforge.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\runtime\\jsonutilities\\public\\jsonobjectconverter.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\runtime\\jsonutilities\\public\\jsonobjectwrapper.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\jsonutilities\\uht\\jsonobjectwrapper.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

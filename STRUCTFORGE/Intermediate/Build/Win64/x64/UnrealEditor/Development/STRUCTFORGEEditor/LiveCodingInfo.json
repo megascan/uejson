@@ -1,0 +1,10 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.STRUCTFORGEEditor.cpp.obj": [
+			"PerModuleInline.gen.cpp.obj",
+			"STRUCTFORGEEditor.cpp.obj",
+			"StructPropertyCustomization.cpp.obj"
+		]
+	}
+}

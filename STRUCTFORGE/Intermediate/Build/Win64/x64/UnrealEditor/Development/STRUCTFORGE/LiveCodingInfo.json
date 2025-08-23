@@ -1,0 +1,20 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.STRUCTFORGE.cpp.obj": [
+			"STRUCTFORGE.init.gen.cpp.obj",
+			"StructForgeBlueprintLibrary.gen.cpp.obj",
+			"StructForgeConfig.gen.cpp.obj",
+			"StructForgeHandler.gen.cpp.obj",
+			"StructForgeJsonObject.gen.cpp.obj",
+			"StructForgeTypes.gen.cpp.obj",
+			"PerModuleInline.gen.cpp.obj",
+			"STRUCTFORGE.cpp.obj",
+			"StructForgeBlueprintLibrary.cpp.obj",
+			"StructForgeConfig.cpp.obj",
+			"StructForgeHandler.cpp.obj",
+			"StructForgeJsonObject.cpp.obj",
+			"StructForgeTests.cpp.obj"
+		]
+	}
+}

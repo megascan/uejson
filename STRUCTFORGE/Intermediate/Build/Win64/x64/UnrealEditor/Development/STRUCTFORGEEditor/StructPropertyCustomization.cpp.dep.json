@@ -1,0 +1,24 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforgeeditor\\private\\structpropertycustomization.cpp",
+        "ProvidedModule": "",
+        "PCH": "d:\\unreal projects\\jsontesting\\intermediate\\build\\win64\\x64\\jsontestingeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\structforgeeditor\\definitions.structforgeeditor.h",
+            "d:\\unreal projects\\jsontesting\\plugins\\structforge\\source\\structforgeeditor\\public\\structpropertycustomization.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\editor\\propertyeditor\\public\\idetailcustomization.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\editor\\propertyeditor\\public\\detaillayoutbuilder.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\editor\\propertyeditor\\public\\idetailpropertyrow.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\editor\\propertyeditor\\public\\detailwidgetrow.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\editor\\propertyeditor\\public\\detailcategorybuilder.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\editor\\propertyeditor\\public\\idetailcustomnodebuilder.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\editor\\propertyeditor\\public\\detailbuildertypes.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\editor\\propertyeditor\\public\\propertyeditorcopypaste.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\editor\\propertyeditor\\public\\idetailchildrenbuilder.h",
+            "d:\\unrealengine\\ue_5.6\\engine\\source\\editor\\propertyeditor\\public\\ipropertyutilities.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

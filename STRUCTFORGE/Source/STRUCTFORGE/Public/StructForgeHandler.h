@@ -17,11 +17,6 @@ class STRUCTFORGE_API UStructForgeHandler : public UObject
 public:
     UStructForgeHandler();
     
-    UFUNCTION(BlueprintCallable, Category = "StructForge|Core", meta = (DisplayName = "Serialize Struct to JSON"))
-    static bool SerializeStructToJson(const int32& StructRef, UScriptStruct* StructType, FString& OutJsonString, bool bPrettyPrint = false);
-    
-    UFUNCTION(BlueprintCallable, Category = "StructForge|Core", meta = (DisplayName = "Deserialize JSON to Struct"))
-    static bool DeserializeJsonToStruct(const FString& JsonString, const int32& StructRef, UScriptStruct* StructType);
     
     UFUNCTION(BlueprintCallable, Category = "StructForge|Player Data", meta = (DisplayName = "Serialize Player Data"))
     static FStructForgeResult SerializePlayerData(const FPlayerData& PlayerData, bool bPrettyPrint = true);
@@ -110,6 +105,13 @@ public:
     
     static TSharedPtr<FJsonObject> UStructToJsonObject(const UStruct* StructDefinition, const void* Struct);
     static bool JsonObjectToUStruct(const TSharedPtr<FJsonObject>& JsonObject, const UStruct* StructDefinition, void* OutStruct);
+    
+    // Enhanced serialization with custom metadata support
+    static bool SerializeUStructToJsonObjectStringWithMetadata(const UStruct* StructDefinition, const void* Struct, FString& OutJsonString, bool bPrettyPrint = false);
+    static bool DeserializeJsonObjectStringToUStructWithMetadata(const FString& JsonString, const UStruct* StructDefinition, void* OutStruct);
+    
+    static TSharedPtr<FJsonObject> UStructToJsonObjectWithMetadata(const UStruct* StructDefinition, const void* Struct);
+    static bool JsonObjectToUStructWithMetadata(const TSharedPtr<FJsonObject>& JsonObject, const UStruct* StructDefinition, void* OutStruct);
     
 private:
     static bool ValidateJsonDepth(const TSharedPtr<FJsonObject>& JsonObject, int32 CurrentDepth, int32 MaxDepth);

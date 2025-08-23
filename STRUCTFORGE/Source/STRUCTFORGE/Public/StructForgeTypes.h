@@ -281,6 +281,19 @@ struct FGameSettings
 };
 
 USTRUCT(BlueprintType)
+struct FIntArray
+{
+    GENERATED_BODY()
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Array")
+    TArray<int32> Values;
+    
+    FIntArray()
+    {
+    }
+};
+
+USTRUCT(BlueprintType)
 struct FComplexNestedData
 {
     GENERATED_BODY()
@@ -292,7 +305,7 @@ struct FComplexNestedData
     TMap<FString, FPlayerData> PlayerMap;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Complex")
-    TArray<TArray<int32>> Matrix;
+    TArray<FIntArray> Matrix;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Complex")
     FGameSettings GlobalSettings;

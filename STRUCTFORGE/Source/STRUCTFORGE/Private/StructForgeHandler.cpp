@@ -14,29 +14,6 @@ UStructForgeHandler::UStructForgeHandler()
 {
 }
 
-bool UStructForgeHandler::SerializeStructToJson(const int32& StructRef, UScriptStruct* StructType, FString& OutJsonString, bool bPrettyPrint)
-{
-    if (!StructType)
-    {
-        UE_LOG(LogStructForge, Error, TEXT("SerializeStructToJson: StructType is null"));
-        return false;
-    }
-    
-    const void* StructData = &StructRef;
-    return SerializeUStructToJsonObjectString(StructType, StructData, OutJsonString, bPrettyPrint);
-}
-
-bool UStructForgeHandler::DeserializeJsonToStruct(const FString& JsonString, const int32& StructRef, UScriptStruct* StructType)
-{
-    if (!StructType)
-    {
-        UE_LOG(LogStructForge, Error, TEXT("DeserializeJsonToStruct: StructType is null"));
-        return false;
-    }
-    
-    void* StructData = &const_cast<int32&>(StructRef);
-    return DeserializeJsonObjectStringToUStruct(JsonString, StructType, StructData);
-}
 
 FStructForgeResult UStructForgeHandler::SerializePlayerData(const FPlayerData& PlayerData, bool bPrettyPrint)
 {
@@ -636,4 +613,409 @@ int32 UStructForgeHandler::CalculateJsonDepth(const TSharedPtr<FJsonObject>& Jso
 void UStructForgeHandler::ExecuteAsyncTask(TFunction<void()> Task)
 {
     AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, Task);
+}
+
+TSharedPtr<FJsonObject> UStructForgeHandler::UStructToJsonObjectWithMetadata(const UStruct* StructDefinition, const void* Struct)
+{
+    if (!StructDefinition || !Struct)
+    {
+        return nullptr;
+    }
+    
+    TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
+    
+    // Iterate through all properties
+    for (TFieldIterator<FProperty> PropIt(StructDefinition); PropIt; ++PropIt)
+    {
+        FProperty* Property = *PropIt;
+        
+        // Check if property should be serialized
+        const FString* JsonSerializeMeta = Property->FindMetaData(TEXT("JsonSerialize"));
+        if (JsonSerializeMeta && JsonSerializeMeta->Equals(TEXT("false"), ESearchCase::IgnoreCase))
+        {
+            UE_LOG(LogStructForge, Verbose, TEXT("Skipping property %s (JsonSerialize=false)"), *Property->GetName());
+            continue; // Skip this property
+        }
+        
+        // Get custom JSON field name or use property name
+        const FString* JsonFieldNameMeta = Property->FindMetaData(TEXT("JsonFieldName"));
+        FString FieldName = JsonFieldNameMeta && !JsonFieldNameMeta->IsEmpty() ? *JsonFieldNameMeta : Property->GetName();
+        
+        // Get property value pointer
+        const void* ValueAddress = Property->ContainerPtrToValuePtr<const void>(Struct);
+        
+        // Handle different property types
+        if (FNumericProperty* NumericProperty = CastField<FNumericProperty>(Property))
+        {
+            if (NumericProperty->IsFloatingPoint())
+            {
+                double Value = NumericProperty->GetFloatingPointPropertyValue(ValueAddress);
+                JsonObject->SetNumberField(FieldName, Value);
+            }
+            else if (NumericProperty->IsInteger())
+            {
+                int64 Value = NumericProperty->GetSignedIntPropertyValue(ValueAddress);
+                JsonObject->SetNumberField(FieldName, Value);
+            }
+        }
+        else if (FBoolProperty* BoolProperty = CastField<FBoolProperty>(Property))
+        {
+            bool Value = BoolProperty->GetPropertyValue(ValueAddress);
+            JsonObject->SetBoolField(FieldName, Value);
+        }
+        else if (FStrProperty* StringProperty = CastField<FStrProperty>(Property))
+        {
+            FString Value = StringProperty->GetPropertyValue(ValueAddress);
+            JsonObject->SetStringField(FieldName, Value);
+        }
+        else if (FNameProperty* NameProperty = CastField<FNameProperty>(Property))
+        {
+            FName Value = NameProperty->GetPropertyValue(ValueAddress);
+            JsonObject->SetStringField(FieldName, Value.ToString());
+        }
+        else if (FTextProperty* TextProperty = CastField<FTextProperty>(Property))
+        {
+            FText Value = TextProperty->GetPropertyValue(ValueAddress);
+            JsonObject->SetStringField(FieldName, Value.ToString());
+        }
+        else if (FArrayProperty* ArrayProperty = CastField<FArrayProperty>(Property))
+        {
+            FScriptArrayHelper ArrayHelper(ArrayProperty, ValueAddress);
+            TArray<TSharedPtr<FJsonValue>> JsonArray;
+            
+            for (int32 i = 0; i < ArrayHelper.Num(); ++i)
+            {
+                const void* ElementValue = ArrayHelper.GetRawPtr(i);
+                
+                // Handle array element based on inner property type
+                if (FNumericProperty* InnerNumeric = CastField<FNumericProperty>(ArrayProperty->Inner))
+                {
+                    if (InnerNumeric->IsFloatingPoint())
+                    {
+                        double Value = InnerNumeric->GetFloatingPointPropertyValue(ElementValue);
+                        JsonArray.Add(MakeShareable(new FJsonValueNumber(Value)));
+                    }
+                    else
+                    {
+                        int64 Value = InnerNumeric->GetSignedIntPropertyValue(ElementValue);
+                        JsonArray.Add(MakeShareable(new FJsonValueNumber(Value)));
+                    }
+                }
+                else if (FBoolProperty* InnerBool = CastField<FBoolProperty>(ArrayProperty->Inner))
+                {
+                    bool Value = InnerBool->GetPropertyValue(ElementValue);
+                    JsonArray.Add(MakeShareable(new FJsonValueBoolean(Value)));
+                }
+                else if (FStrProperty* InnerString = CastField<FStrProperty>(ArrayProperty->Inner))
+                {
+                    FString Value = InnerString->GetPropertyValue(ElementValue);
+                    JsonArray.Add(MakeShareable(new FJsonValueString(Value)));
+                }
+                else if (FStructProperty* InnerStruct = CastField<FStructProperty>(ArrayProperty->Inner))
+                {
+                    TSharedPtr<FJsonObject> InnerJsonObject = UStructToJsonObjectWithMetadata(InnerStruct->Struct, ElementValue);
+                    if (InnerJsonObject.IsValid())
+                    {
+                        JsonArray.Add(MakeShareable(new FJsonValueObject(InnerJsonObject)));
+                    }
+                }
+            }
+            
+            JsonObject->SetArrayField(FieldName, JsonArray);
+        }
+        else if (FStructProperty* StructProperty = CastField<FStructProperty>(Property))
+        {
+            // Recursively handle nested structs
+            TSharedPtr<FJsonObject> NestedJsonObject = UStructToJsonObjectWithMetadata(StructProperty->Struct, ValueAddress);
+            if (NestedJsonObject.IsValid())
+            {
+                JsonObject->SetObjectField(FieldName, NestedJsonObject);
+            }
+        }
+        else if (FMapProperty* MapProperty = CastField<FMapProperty>(Property))
+        {
+            // Handle map properties
+            FScriptMapHelper MapHelper(MapProperty, ValueAddress);
+            TSharedPtr<FJsonObject> MapJsonObject = MakeShareable(new FJsonObject);
+            
+            for (int32 i = 0; i < MapHelper.Num(); ++i)
+            {
+                const void* KeyValue = MapHelper.GetKeyPtr(i);
+                const void* MapValue = MapHelper.GetValuePtr(i);
+                
+                // For simplicity, assuming string keys
+                if (FStrProperty* KeyProp = CastField<FStrProperty>(MapProperty->KeyProp))
+                {
+                    FString Key = KeyProp->GetPropertyValue(KeyValue);
+                    
+                    if (FStrProperty* ValueProp = CastField<FStrProperty>(MapProperty->ValueProp))
+                    {
+                        FString Value = ValueProp->GetPropertyValue(MapValue);
+                        MapJsonObject->SetStringField(Key, Value);
+                    }
+                    else if (FNumericProperty* NumValueProp = CastField<FNumericProperty>(MapProperty->ValueProp))
+                    {
+                        if (NumValueProp->IsFloatingPoint())
+                        {
+                            double Value = NumValueProp->GetFloatingPointPropertyValue(MapValue);
+                            MapJsonObject->SetNumberField(Key, Value);
+                        }
+                        else
+                        {
+                            int64 Value = NumValueProp->GetSignedIntPropertyValue(MapValue);
+                            MapJsonObject->SetNumberField(Key, Value);
+                        }
+                    }
+                }
+            }
+            
+            JsonObject->SetObjectField(FieldName, MapJsonObject);
+        }
+        
+        UE_LOG(LogStructForge, Verbose, TEXT("Serialized property %s as JSON field %s"), *Property->GetName(), *FieldName);
+    }
+    
+    return JsonObject;
+}
+
+bool UStructForgeHandler::SerializeUStructToJsonObjectStringWithMetadata(const UStruct* StructDefinition, const void* Struct, FString& OutJsonString, bool bPrettyPrint)
+{
+    TSharedPtr<FJsonObject> JsonObject = UStructToJsonObjectWithMetadata(StructDefinition, Struct);
+    if (!JsonObject.IsValid())
+    {
+        return false;
+    }
+    
+    TSharedRef<TJsonWriter<>> Writer = bPrettyPrint 
+        ? TJsonWriterFactory<>::Create(&OutJsonString)
+        : TJsonWriterFactory<>::Create(&OutJsonString, 0);
+    
+    return FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+}
+
+bool UStructForgeHandler::JsonObjectToUStructWithMetadata(const TSharedPtr<FJsonObject>& JsonObject, const UStruct* StructDefinition, void* OutStruct)
+{
+    if (!JsonObject.IsValid() || !StructDefinition || !OutStruct)
+    {
+        return false;
+    }
+    
+    // Clear the struct first
+    StructDefinition->InitializeStruct(OutStruct);
+    
+    // Iterate through all properties in the struct
+    for (TFieldIterator<FProperty> PropIt(StructDefinition); PropIt; ++PropIt)
+    {
+        FProperty* Property = *PropIt;
+        
+        // Check if property should be deserialized
+        const FString* JsonSerializeMeta = Property->FindMetaData(TEXT("JsonSerialize"));
+        if (JsonSerializeMeta && JsonSerializeMeta->Equals(TEXT("false"), ESearchCase::IgnoreCase))
+        {
+            UE_LOG(LogStructForge, Verbose, TEXT("Skipping deserialization of property %s (JsonSerialize=false)"), *Property->GetName());
+            continue;
+        }
+        
+        // Get custom JSON field name or use property name
+        const FString* JsonFieldNameMeta = Property->FindMetaData(TEXT("JsonFieldName"));
+        FString FieldName = JsonFieldNameMeta && !JsonFieldNameMeta->IsEmpty() ? *JsonFieldNameMeta : Property->GetName();
+        
+        // Check if JSON has this field
+        if (!JsonObject->HasField(FieldName))
+        {
+            UE_LOG(LogStructForge, Verbose, TEXT("JSON does not have field %s for property %s"), *FieldName, *Property->GetName());
+            continue;
+        }
+        
+        // Get property value pointer
+        void* ValueAddress = Property->ContainerPtrToValuePtr<void>(OutStruct);
+        TSharedPtr<FJsonValue> JsonValue = JsonObject->TryGetField(FieldName);
+        
+        if (!JsonValue.IsValid())
+        {
+            continue;
+        }
+        
+        // Handle different property types
+        if (FNumericProperty* NumericProperty = CastField<FNumericProperty>(Property))
+        {
+            double NumValue;
+            if (JsonValue->TryGetNumber(NumValue))
+            {
+                if (NumericProperty->IsFloatingPoint())
+                {
+                    NumericProperty->SetFloatingPointPropertyValue(ValueAddress, NumValue);
+                }
+                else if (NumericProperty->IsInteger())
+                {
+                    NumericProperty->SetIntPropertyValue(ValueAddress, (int64)NumValue);
+                }
+            }
+        }
+        else if (FBoolProperty* BoolProperty = CastField<FBoolProperty>(Property))
+        {
+            bool BoolValue;
+            if (JsonValue->TryGetBool(BoolValue))
+            {
+                BoolProperty->SetPropertyValue(ValueAddress, BoolValue);
+            }
+        }
+        else if (FStrProperty* StringProperty = CastField<FStrProperty>(Property))
+        {
+            FString StringValue;
+            if (JsonValue->TryGetString(StringValue))
+            {
+                StringProperty->SetPropertyValue(ValueAddress, StringValue);
+            }
+        }
+        else if (FNameProperty* NameProperty = CastField<FNameProperty>(Property))
+        {
+            FString StringValue;
+            if (JsonValue->TryGetString(StringValue))
+            {
+                NameProperty->SetPropertyValue(ValueAddress, FName(*StringValue));
+            }
+        }
+        else if (FTextProperty* TextProperty = CastField<FTextProperty>(Property))
+        {
+            FString StringValue;
+            if (JsonValue->TryGetString(StringValue))
+            {
+                TextProperty->SetPropertyValue(ValueAddress, FText::FromString(StringValue));
+            }
+        }
+        else if (FArrayProperty* ArrayProperty = CastField<FArrayProperty>(Property))
+        {
+            const TArray<TSharedPtr<FJsonValue>>* JsonArray;
+            if (JsonValue->TryGetArray(JsonArray))
+            {
+                FScriptArrayHelper ArrayHelper(ArrayProperty, ValueAddress);
+                ArrayHelper.EmptyAndAddValues(JsonArray->Num());
+                
+                for (int32 i = 0; i < JsonArray->Num(); ++i)
+                {
+                    void* ElementValue = ArrayHelper.GetRawPtr(i);
+                    const TSharedPtr<FJsonValue>& ArrayElement = (*JsonArray)[i];
+                    
+                    if (FNumericProperty* InnerNumeric = CastField<FNumericProperty>(ArrayProperty->Inner))
+                    {
+                        double NumValue;
+                        if (ArrayElement->TryGetNumber(NumValue))
+                        {
+                            if (InnerNumeric->IsFloatingPoint())
+                            {
+                                InnerNumeric->SetFloatingPointPropertyValue(ElementValue, NumValue);
+                            }
+                            else
+                            {
+                                InnerNumeric->SetIntPropertyValue(ElementValue, (int64)NumValue);
+                            }
+                        }
+                    }
+                    else if (FBoolProperty* InnerBool = CastField<FBoolProperty>(ArrayProperty->Inner))
+                    {
+                        bool BoolValue;
+                        if (ArrayElement->TryGetBool(BoolValue))
+                        {
+                            InnerBool->SetPropertyValue(ElementValue, BoolValue);
+                        }
+                    }
+                    else if (FStrProperty* InnerString = CastField<FStrProperty>(ArrayProperty->Inner))
+                    {
+                        FString StringValue;
+                        if (ArrayElement->TryGetString(StringValue))
+                        {
+                            InnerString->SetPropertyValue(ElementValue, StringValue);
+                        }
+                    }
+                    else if (FStructProperty* InnerStruct = CastField<FStructProperty>(ArrayProperty->Inner))
+                    {
+                        const TSharedPtr<FJsonObject>* InnerJsonObject;
+                        if (ArrayElement->TryGetObject(InnerJsonObject))
+                        {
+                            JsonObjectToUStructWithMetadata(*InnerJsonObject, InnerStruct->Struct, ElementValue);
+                        }
+                    }
+                }
+            }
+        }
+        else if (FStructProperty* StructProperty = CastField<FStructProperty>(Property))
+        {
+            const TSharedPtr<FJsonObject>* NestedJsonObject;
+            if (JsonValue->TryGetObject(NestedJsonObject))
+            {
+                JsonObjectToUStructWithMetadata(*NestedJsonObject, StructProperty->Struct, ValueAddress);
+            }
+        }
+        else if (FMapProperty* MapProperty = CastField<FMapProperty>(Property))
+        {
+            const TSharedPtr<FJsonObject>* MapJsonObject;
+            if (JsonValue->TryGetObject(MapJsonObject))
+            {
+                FScriptMapHelper MapHelper(MapProperty, ValueAddress);
+                MapHelper.EmptyValues();
+                
+                for (const auto& Pair : (*MapJsonObject)->Values)
+                {
+                    // Assuming string keys
+                    if (FStrProperty* KeyProp = CastField<FStrProperty>(MapProperty->KeyProp))
+                    {
+                        int32 NewIndex = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
+                        MapHelper.Rehash();
+                        
+                        void* KeyValue = MapHelper.GetKeyPtr(NewIndex);
+                        void* MapValue = MapHelper.GetValuePtr(NewIndex);
+                        
+                        KeyProp->SetPropertyValue(KeyValue, Pair.Key);
+                        
+                        if (FStrProperty* ValueProp = CastField<FStrProperty>(MapProperty->ValueProp))
+                        {
+                            FString StringValue;
+                            if (Pair.Value->TryGetString(StringValue))
+                            {
+                                ValueProp->SetPropertyValue(MapValue, StringValue);
+                            }
+                        }
+                        else if (FNumericProperty* NumValueProp = CastField<FNumericProperty>(MapProperty->ValueProp))
+                        {
+                            double NumValue;
+                            if (Pair.Value->TryGetNumber(NumValue))
+                            {
+                                if (NumValueProp->IsFloatingPoint())
+                                {
+                                    NumValueProp->SetFloatingPointPropertyValue(MapValue, NumValue);
+                                }
+                                else
+                                {
+                                    NumValueProp->SetIntPropertyValue(MapValue, (int64)NumValue);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        UE_LOG(LogStructForge, Verbose, TEXT("Deserialized JSON field %s to property %s"), *FieldName, *Property->GetName());
+    }
+    
+    return true;
+}
+
+bool UStructForgeHandler::DeserializeJsonObjectStringToUStructWithMetadata(const FString& JsonString, const UStruct* StructDefinition, void* OutStruct)
+{
+    if (JsonString.IsEmpty() || !StructDefinition || !OutStruct)
+    {
+        return false;
+    }
+    
+    TSharedPtr<FJsonObject> JsonObject;
+    TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
+    
+    if (!FJsonSerializer::Deserialize(Reader, JsonObject) || !JsonObject.IsValid())
+    {
+        return false;
+    }
+    
+    return JsonObjectToUStructWithMetadata(JsonObject, StructDefinition, OutStruct);
 }
