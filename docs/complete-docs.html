@@ -1,24 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STRUCTFORGE Complete API Documentation</title>
+    <title>STRUCTFORGE - API Reference</title>
     <link rel="icon" type="image/png" href="../STRUCTFORGE/Resources/Icon128.png">
     <style>
         :root {
-            --primary: #0073e6;
-            --primary-dark: #005bb5;
-            --secondary: #1a1a1a;
-            --accent: #00d4aa;
-            --bg: #f8f9fa;
-            --card-bg: #ffffff;
-            --text: #2c3e50;
-            --text-light: #6c757d;
-            --border: #e0e0e0;
-            --code-bg: #f4f4f4;
-            --success: #28a745;
-            --warning: #ffc107;
+            --primary: #FF6617;
+            --primary-dark: #e55a14;
+            --primary-light: #ff7f3a;
+            --secondary: #132D3D;
+            --secondary-light: #1e3f52;
+            --secondary-lighter: #2a4e65;
+            --bg: #0a1419;
+            --bg-light: #0f1c23;
+            --card-bg: #162329;
+            --card-hover: #1a2931;
+            --text: #e8eef2;
+            --text-light: #a8b5bd;
+            --text-muted: #6b7a84;
+            --border: #243540;
+            --code-bg: #0d1519;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --gradient-start: #FF6617;
+            --gradient-end: #ff8c4d;
         }
 
         * {
@@ -32,14 +40,33 @@
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary-lighter);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
         }
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 2rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 0;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -57,16 +84,48 @@
         }
 
         .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            color: var(--text);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 15px rgba(255, 102, 23, 0.3);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .logo-title {
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .stats {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             align-items: center;
         }
 
@@ -75,36 +134,54 @@
         }
 
         .stat-number {
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(255, 102, 23, 0.5);
         }
 
         .stat-label {
-            font-size: 0.85rem;
-            opacity: 0.9;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* Search Bar */
         .search-container {
             position: relative;
             width: 100%;
-            max-width: 500px;
-            margin: 1rem auto;
+            max-width: 1400px;
+            margin: 1rem auto 0;
+            padding: 0 2rem;
+        }
+
+        .search-wrapper {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .search-input {
             width: 100%;
-            padding: 0.75rem 1rem 0.75rem 3rem;
-            border: none;
-            border-radius: 25px;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--border);
+            background: var(--bg-light);
+            border-radius: 12px;
             font-size: 1rem;
-            background: rgba(255,255,255,0.95);
             color: var(--text);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
         }
 
         .search-input:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+            border-color: var(--primary);
+            background: var(--card-bg);
+            box-shadow: 0 0 0 4px rgba(255, 102, 23, 0.1), 0 10px 40px rgba(255, 102, 23, 0.1);
         }
 
         .search-icon {
@@ -112,52 +189,88 @@
             left: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-light);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .search-results-count {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.25rem 0.75rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .search-results-count.visible {
+            display: block;
         }
 
         /* Filter Tabs */
         .filter-tabs {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 1.5rem 2rem;
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             flex-wrap: wrap;
-            background: white;
+            background: var(--bg-light);
             border-bottom: 1px solid var(--border);
             position: sticky;
-            top: 80px;
+            top: 73px;
             z-index: 100;
         }
 
         .filter-tab {
-            padding: 0.5rem 1rem;
-            background: var(--bg);
+            padding: 0.5rem 1.25rem;
+            background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 20px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 0.9rem;
+            color: var(--text-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
         }
 
         .filter-tab:hover {
-            background: var(--primary);
-            color: white;
+            color: var(--text);
             border-color: var(--primary);
+            transform: translateY(-1px);
         }
 
         .filter-tab.active {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(255, 102, 23, 0.3);
         }
 
         .filter-count {
-            background: rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.15);
             padding: 0.1rem 0.4rem;
             border-radius: 10px;
             margin-left: 0.5rem;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
         /* Main Container */
@@ -170,7 +283,7 @@
         /* Function Grid */
         .function-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(550px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
         }
@@ -181,23 +294,43 @@
             border-radius: 12px;
             padding: 1.5rem;
             border: 1px solid var(--border);
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .function-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--primary-light));
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .function-card:hover {
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            background: var(--card-hover);
+            border-color: var(--primary);
             transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(255, 102, 23, 0.15);
+        }
+
+        .function-card:hover::before {
+            opacity: 1;
         }
 
         .function-number {
             display: inline-block;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: white;
-            padding: 0.2rem 0.5rem;
+            padding: 0.25rem 0.6rem;
             border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
         }
 
         .function-header {
@@ -205,64 +338,72 @@
         }
 
         .function-name {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 0.25rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
         }
 
         .function-cpp-name {
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9rem;
-            color: var(--text-light);
-            margin-bottom: 0.5rem;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            opacity: 0.9;
         }
 
         .function-category {
             display: inline-block;
-            padding: 0.2rem 0.6rem;
-            background: var(--bg);
-            border-radius: 12px;
-            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--secondary-lighter);
+            border-radius: 6px;
+            font-size: 0.7rem;
             text-transform: uppercase;
             font-weight: 600;
             color: var(--text-light);
             margin-right: 0.5rem;
+            letter-spacing: 0.5px;
         }
 
         .function-type {
             display: inline-block;
-            padding: 0.2rem 0.6rem;
+            padding: 0.25rem 0.75rem;
             background: var(--primary);
             color: white;
-            border-radius: 12px;
-            font-size: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .function-type.cpp-only {
-            background: var(--secondary);
+            background: var(--secondary-lighter);
         }
 
         .function-description {
-            color: var(--text);
+            color: var(--text-light);
             margin: 1rem 0;
-            line-height: 1.5;
+            line-height: 1.6;
+            font-size: 0.95rem;
         }
 
         /* Parameters */
         .params-section {
             margin: 1rem 0;
             padding: 1rem;
-            background: var(--bg);
+            background: var(--bg-light);
             border-radius: 8px;
+            border: 1px solid var(--border);
         }
 
         .params-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text);
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .param {
@@ -272,20 +413,228 @@
         }
 
         .param-name {
-            font-family: monospace;
-            color: var(--primary);
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            color: var(--primary-light);
             font-weight: 500;
             min-width: 150px;
         }
 
         .param-type {
-            font-family: monospace;
-            color: var(--text-light);
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            color: var(--text-muted);
             margin: 0 1rem;
         }
 
         .param-desc {
-            color: var(--text);
+            color: var(--text-light);
+        }
+
+        /* Blueprint Node Preview */
+        .blueprint-preview {
+            margin: 1.5rem 0;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(255, 102, 23, 0.03) 0%, transparent 70%),
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(42, 78, 101, 0.15) 0px,
+                    transparent 1px,
+                    transparent 20px,
+                    rgba(42, 78, 101, 0.15) 21px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(42, 78, 101, 0.15) 0px,
+                    transparent 1px,
+                    transparent 20px,
+                    rgba(42, 78, 101, 0.15) 21px
+                ),
+                linear-gradient(135deg, #0a1419 0%, #0f1c23 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2.5rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blueprint-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.3;
+        }
+
+        .blueprint-node {
+            background: linear-gradient(135deg, #1e3f52 0%, #132D3D 100%);
+            border: 2px solid #2a4e65;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 340px;
+            margin: 0 auto;
+            box-shadow: 
+                0 6px 20px rgba(0, 0, 0, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .node-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 0.6rem 1rem;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .node-icon {
+            width: 18px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--primary);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .node-title {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            letter-spacing: 0.3px;
+        }
+
+        .node-body {
+            padding: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            min-height: 60px;
+        }
+
+        .node-pins {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .node-pins.inputs {
+            align-items: flex-start;
+        }
+
+        .node-pins.outputs {
+            align-items: flex-end;
+        }
+
+        .node-pin {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .pin-socket {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid;
+            background: var(--bg);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .pin-socket.exec {
+            border-color: #fff;
+            background: #fff;
+            border-radius: 3px;
+            transform: rotate(45deg);
+            width: 10px;
+            height: 10px;
+        }
+
+        .pin-socket.string {
+            border-color: #ff69b4;
+            background: radial-gradient(circle, #ff69b4 35%, var(--bg) 36%);
+        }
+
+        .pin-socket.int {
+            border-color: #00e5ff;
+            background: radial-gradient(circle, #00e5ff 35%, var(--bg) 36%);
+        }
+
+        .pin-socket.float {
+            border-color: #00ff88;
+            background: radial-gradient(circle, #00ff88 35%, var(--bg) 36%);
+        }
+
+        .pin-socket.bool {
+            border-color: #ff0000;
+            background: radial-gradient(circle, #ff0000 35%, var(--bg) 36%);
+        }
+
+        .pin-socket.object {
+            border-color: #4a90e2;
+            background: radial-gradient(circle, #4a90e2 35%, var(--bg) 36%);
+        }
+
+        .pin-socket.vector {
+            border-color: #ffeb3b;
+            background: radial-gradient(circle, #ffeb3b 35%, var(--bg) 36%);
+        }
+
+        .pin-socket.text {
+            border-color: #ff8c69;
+            background: radial-gradient(circle, #ff8c69 35%, var(--bg) 36%);
+        }
+
+        .pin-socket.rotator {
+            border-color: #b39ddb;
+            background: radial-gradient(circle, #b39ddb 35%, var(--bg) 36%);
+        }
+
+        .pin-socket.transform {
+            border-color: #ff6f00;
+            background: radial-gradient(circle, #ff6f00 35%, var(--bg) 36%);
+        }
+
+        .pin-socket.array {
+            border-color: #a855f7;
+            background: radial-gradient(circle, #a855f7 35%, var(--bg) 36%);
+            border-style: double;
+            border-width: 3px;
+        }
+
+        .pin-label {
+            font-weight: 500;
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .inputs .pin-label {
+            order: 2;
+        }
+
+        .inputs .pin-socket {
+            order: 1;
+        }
+
+        .outputs .pin-label {
+            order: 1;
+        }
+
+        .outputs .pin-socket {
+            order: 2;
         }
 
         /* Code Block */
@@ -294,9 +643,12 @@
         }
 
         .code-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .code-block {
@@ -304,7 +656,7 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 1rem;
-            font-family: 'Consolas', 'Monaco', monospace;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
             font-size: 0.85rem;
             overflow-x: auto;
             position: relative;
@@ -314,23 +666,33 @@
             margin: 0;
             white-space: pre-wrap;
             word-wrap: break-word;
+            color: var(--text-light);
         }
 
         .copy-button {
             position: absolute;
             top: 0.5rem;
             right: 0.5rem;
-            padding: 0.25rem 0.5rem;
-            background: var(--primary);
+            padding: 0.35rem 0.75rem;
+            background: var(--secondary-lighter);
             color: white;
             border: none;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
             cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .copy-button:hover {
-            background: var(--primary-dark);
+            background: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .copy-button.copied {
+            background: var(--success);
         }
 
         /* Tags */
@@ -342,30 +704,100 @@
         }
 
         .tag {
-            padding: 0.2rem 0.6rem;
-            background: var(--bg);
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-light);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.75rem;
-            color: var(--text);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .tag.blueprint {
-            background: #e3f2fd;
-            border-color: #2196f3;
-            color: #1976d2;
+            background: rgba(255, 102, 23, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .tag.pure {
-            background: #e8f5e9;
-            border-color: #4caf50;
-            color: #2e7d32;
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+            color: var(--success);
         }
 
         .tag.async {
-            background: #fff3e0;
-            border-color: #ff9800;
-            color: #f57c00;
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        /* Category Sections */
+        .category-section {
+            margin-bottom: 3rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .category-section.hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .category-header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-title {
+            font-size: 1.6rem;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .category-description {
+            color: var(--text-light);
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* No results message */
+        .no-results {
+            display: none;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-light);
+        }
+
+        .no-results.visible {
+            display: block;
+        }
+
+        .no-results-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .no-results-text {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-results-hint {
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
 
         /* Responsive */
@@ -373,7 +805,7 @@
             .function-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .header-content {
                 flex-direction: column;
                 text-align: center;
@@ -383,42 +815,41 @@
                 width: 100%;
                 justify-content: space-around;
             }
+
+            .filter-tabs {
+                top: 140px;
+            }
         }
 
-        /* Category Sections */
-        .category-section {
-            margin-bottom: 3rem;
+        /* Syntax Highlighting */
+        .hljs-keyword { color: var(--primary); font-weight: 600; }
+        .hljs-string { color: #10b981; }
+        .hljs-comment { color: var(--text-muted); font-style: italic; }
+        .hljs-number { color: #f59e0b; }
+        .hljs-type { color: #818cf8; }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
-        .category-header {
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .category-title {
-            font-size: 1.8rem;
-            color: var(--text);
-        }
-
-        .category-description {
-            color: var(--text-light);
-            margin-top: 0.5rem;
-        }
-
-        /* Hide elements for filtering */
-        .hidden {
-            display: none !important;
+        .loading {
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header class="header">
         <div class="header-content">
             <div class="logo">
-                <img src="../STRUCTFORGE/Resources/Icon128.png" alt="STRUCTFORGE" style="height: 40px; width: 40px; margin-right: 10px;">
-                STRUCTFORGE Complete API Reference
+                <div class="logo-icon">🔧</div>
+                <div class="logo-text">
+                    <div class="logo-title">STRUCTFORGE</div>
+                    <div class="logo-subtitle">Complete API Reference</div>
+                </div>
             </div>
             <div class="stats">
                 <div class="stat">
@@ -436,8 +867,12 @@
             </div>
         </div>
         <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="searchInput" placeholder="Search functions by name or keyword...">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput"
+                    placeholder="Search functions, parameters, or code examples...">
+                <span class="search-results-count" id="resultsCount">0 results</span>
+            </div>
         </div>
     </header>
 
@@ -456,6 +891,13 @@
 
     <!-- Main Container -->
     <div class="container">
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults">
+            <div class="no-results-icon">🔍</div>
+            <div class="no-results-text">No functions found</div>
+            <div class="no-results-hint">Try searching with different keywords</div>
+        </div>
+
         <!-- Core Operations Section -->
         <div class="category-section" data-category="core">
             <div class="category-header">
@@ -475,8 +917,26 @@
                     <div class="function-description">
                         Creates a new, empty JSON object ready to be populated with data.
                     </div>
+                    <div class="blueprint-preview">
+                        <div class="blueprint-node">
+                            <div class="node-header">
+                                <div class="node-icon">f</div>
+                                <div class="node-title">Create Empty JSON Object</div>
+                            </div>
+                            <div class="node-body">
+                                <div class="node-pins inputs">
+                                </div>
+                                <div class="node-pins outputs">
+                                    <div class="node-pin">
+                                        <span class="pin-label">JSON Object</span>
+                                        <div class="pin-socket object"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>// Method 1: Direct creation
@@ -503,8 +963,42 @@ UStructForgeJsonObject* JsonObj = UStructForgeBlueprintLibrary::CreateJsonObject
                     <div class="function-description">
                         Parses a JSON string into a JSON object for manipulation.
                     </div>
+                    <div class="blueprint-preview">
+                        <div class="blueprint-node">
+                            <div class="node-header">
+                                <div class="node-icon">f</div>
+                                <div class="node-title">Parse JSON String</div>
+                            </div>
+                            <div class="node-body">
+                                <div class="node-pins inputs">
+                                    <div class="node-pin">
+                                        <div class="pin-socket exec"></div>
+                                        <span class="pin-label"></span>
+                                    </div>
+                                    <div class="node-pin">
+                                        <div class="pin-socket string"></div>
+                                        <span class="pin-label">JSON String</span>
+                                    </div>
+                                </div>
+                                <div class="node-pins outputs">
+                                    <div class="node-pin">
+                                        <span class="pin-label"></span>
+                                        <div class="pin-socket exec"></div>
+                                    </div>
+                                    <div class="node-pin">
+                                        <span class="pin-label">JSON Object</span>
+                                        <div class="pin-socket object"></div>
+                                    </div>
+                                    <div class="node-pin">
+                                        <span class="pin-label">Success</span>
+                                        <div class="pin-socket bool"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="params-section">
-                        <div class="params-title">Parameters:</div>
+                        <div class="params-title">Parameters</div>
                         <div class="param">
                             <span class="param-name">JsonString</span>
                             <span class="param-type">FString</span>
@@ -517,7 +1011,7 @@ UStructForgeJsonObject* JsonObj = UStructForgeBlueprintLibrary::CreateJsonObject
                         </div>
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>FString JsonString = TEXT("{\"name\":\"John\",\"age\":30}");
@@ -543,8 +1037,34 @@ if (bSuccess && JsonObj)
                     <div class="function-description">
                         Converts a JSON object to its string representation.
                     </div>
+                    <div class="blueprint-preview">
+                        <div class="blueprint-node">
+                            <div class="node-header">
+                                <div class="node-icon">f</div>
+                                <div class="node-title">JSON Object to String</div>
+                            </div>
+                            <div class="node-body">
+                                <div class="node-pins inputs">
+                                    <div class="node-pin">
+                                        <div class="pin-socket object"></div>
+                                        <span class="pin-label">JSON Object</span>
+                                    </div>
+                                    <div class="node-pin">
+                                        <div class="pin-socket bool"></div>
+                                        <span class="pin-label">Pretty Print</span>
+                                    </div>
+                                </div>
+                                <div class="node-pins outputs">
+                                    <div class="node-pin">
+                                        <span class="pin-label">JSON String</span>
+                                        <div class="pin-socket string"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="params-section">
-                        <div class="params-title">Parameters:</div>
+                        <div class="params-title">Parameters</div>
                         <div class="param">
                             <span class="param-name">JsonObject</span>
                             <span class="param-type">UStructForgeJsonObject*</span>
@@ -557,7 +1077,7 @@ if (bSuccess && JsonObj)
                         </div>
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>UStructForgeJsonObject* JsonObj = CreateJsonObject();
@@ -565,7 +1085,7 @@ FString JsonString = UStructForgeBlueprintLibrary::JsonObjectToString(JsonObj, t
                         </div>
                     </div>
                     <div class="tags">
-                        <span class="tag blueprint">Blueprint Pure</span>
+                        <span class="tag pure">Blueprint Pure</span>
                         <span class="tag">Compact Node</span>
                     </div>
                 </div>
@@ -591,8 +1111,42 @@ FString JsonString = UStructForgeBlueprintLibrary::JsonObjectToString(JsonObj, t
                     <div class="function-description">
                         Retrieves a string value from a JSON object by key.
                     </div>
+                    <div class="blueprint-preview">
+                        <div class="blueprint-node">
+                            <div class="node-header">
+                                <div class="node-icon">f</div>
+                                <div class="node-title">Get String from JSON</div>
+                            </div>
+                            <div class="node-body">
+                                <div class="node-pins inputs">
+                                    <div class="node-pin">
+                                        <div class="pin-socket object"></div>
+                                        <span class="pin-label">JSON Object</span>
+                                    </div>
+                                    <div class="node-pin">
+                                        <div class="pin-socket string"></div>
+                                        <span class="pin-label">Key</span>
+                                    </div>
+                                    <div class="node-pin">
+                                        <div class="pin-socket string"></div>
+                                        <span class="pin-label">Default</span>
+                                    </div>
+                                </div>
+                                <div class="node-pins outputs">
+                                    <div class="node-pin">
+                                        <span class="pin-label">Value</span>
+                                        <div class="pin-socket string"></div>
+                                    </div>
+                                    <div class="node-pin">
+                                        <span class="pin-label">Found</span>
+                                        <div class="pin-socket bool"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>bool bFound;
@@ -617,8 +1171,42 @@ FString Name = UStructForgeBlueprintLibrary::GetJsonString(
                     <div class="function-description">
                         Retrieves an integer value from a JSON object.
                     </div>
+                    <div class="blueprint-preview">
+                        <div class="blueprint-node">
+                            <div class="node-header">
+                                <div class="node-icon">f</div>
+                                <div class="node-title">Get Integer from JSON</div>
+                            </div>
+                            <div class="node-body">
+                                <div class="node-pins inputs">
+                                    <div class="node-pin">
+                                        <div class="pin-socket object"></div>
+                                        <span class="pin-label">JSON Object</span>
+                                    </div>
+                                    <div class="node-pin">
+                                        <div class="pin-socket string"></div>
+                                        <span class="pin-label">Key</span>
+                                    </div>
+                                    <div class="node-pin">
+                                        <div class="pin-socket int"></div>
+                                        <span class="pin-label">Default</span>
+                                    </div>
+                                </div>
+                                <div class="node-pins outputs">
+                                    <div class="node-pin">
+                                        <span class="pin-label">Value</span>
+                                        <div class="pin-socket int"></div>
+                                    </div>
+                                    <div class="node-pin">
+                                        <span class="pin-label">Found</span>
+                                        <div class="pin-socket bool"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>bool bFound;
@@ -643,7 +1231,7 @@ int32 Age = UStructForgeBlueprintLibrary::GetJsonInt(JsonObj, TEXT("age"), 0, bF
                         Retrieves a floating-point value from a JSON object.
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>bool bFound;
@@ -665,7 +1253,7 @@ float Price = UStructForgeBlueprintLibrary::GetJsonFloat(JsonObj, TEXT("price"),
                         Retrieves a boolean value from a JSON object.
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>bool bFound;
@@ -687,7 +1275,7 @@ bool bIsActive = UStructForgeBlueprintLibrary::GetJsonBool(JsonObj, TEXT("active
                         Retrieves an FText value from a JSON object.
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>bool bFound;
@@ -710,7 +1298,7 @@ FText Description = UStructForgeBlueprintLibrary::GetJsonText(
                         Retrieves an FVector from JSON (expects X, Y, Z fields).
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>bool bFound;
@@ -733,7 +1321,7 @@ FVector Position = UStructForgeBlueprintLibrary::GetJsonVector(
                         Retrieves an FRotator from JSON (expects Pitch, Yaw, Roll fields).
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>bool bFound;
@@ -756,7 +1344,7 @@ FRotator Rotation = UStructForgeBlueprintLibrary::GetJsonRotator(
                         Retrieves an FTransform from JSON (expects Location, Rotation, Scale fields).
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>bool bFound;
@@ -1073,11 +1661,41 @@ UStructForgeBlueprintLibrary::SetJsonBoolArray(JsonObj, TEXT("achievements"), Un
                         <span class="function-type">Blueprint</span>
                     </div>
                     <div class="function-description">
-                        THE POWER OF STRUCTFORGE! Serialize ANY USTRUCT to JSON without modification. 
+                        THE POWER OF STRUCTFORGE! Serialize ANY USTRUCT to JSON without modification.
                         In Blueprint, this node accepts wildcard struct pins!
                     </div>
+                    <div class="blueprint-preview">
+                        <div class="blueprint-node">
+                            <div class="node-header">
+                                <div class="node-icon">f</div>
+                                <div class="node-title">Struct to JSON String</div>
+                            </div>
+                            <div class="node-body">
+                                <div class="node-pins inputs">
+                                    <div class="node-pin">
+                                        <div class="pin-socket object" style="background: linear-gradient(45deg, #4a90e2 50%, #ff69b4 50%); border-color: #fff;"></div>
+                                        <span class="pin-label">Struct (Wildcard)</span>
+                                    </div>
+                                    <div class="node-pin">
+                                        <div class="pin-socket bool"></div>
+                                        <span class="pin-label">Pretty Print</span>
+                                    </div>
+                                </div>
+                                <div class="node-pins outputs">
+                                    <div class="node-pin">
+                                        <span class="pin-label">JSON String</span>
+                                        <div class="pin-socket string"></div>
+                                    </div>
+                                    <div class="node-pin">
+                                        <span class="pin-label">Success</span>
+                                        <div class="pin-socket bool"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>// Define ANY struct
@@ -1125,8 +1743,34 @@ bool bSuccess = FJsonObjectConverter::UStructToJsonObjectString(
                     <div class="function-description">
                         Deserialize JSON to ANY USTRUCT. Wildcard support in Blueprint!
                     </div>
+                    <div class="blueprint-preview">
+                        <div class="blueprint-node">
+                            <div class="node-header">
+                                <div class="node-icon">f</div>
+                                <div class="node-title">JSON String to Struct</div>
+                            </div>
+                            <div class="node-body">
+                                <div class="node-pins inputs">
+                                    <div class="node-pin">
+                                        <div class="pin-socket string"></div>
+                                        <span class="pin-label">JSON String</span>
+                                    </div>
+                                </div>
+                                <div class="node-pins outputs">
+                                    <div class="node-pin">
+                                        <span class="pin-label">Struct (Wildcard)</span>
+                                        <div class="pin-socket object" style="background: linear-gradient(45deg, #4a90e2 50%, #ff69b4 50%); border-color: #fff;"></div>
+                                    </div>
+                                    <div class="node-pin">
+                                        <span class="pin-label">Success</span>
+                                        <div class="pin-socket bool"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>FString JsonString = TEXT("{\"PlayerName\":\"Hero\",\"Score\":5000}");
@@ -1154,7 +1798,7 @@ bool bSuccess = FJsonObjectConverter::JsonObjectStringToUStruct(
                         Example implementations for PlayerData, GameSettings, InventoryItem structs.
                         These demonstrate how to use the generic serialization with specific structs.
                     </div>
-                    <ul style="margin: 1rem 0; line-height: 1.8;">
+                    <ul style="margin: 1rem 0; line-height: 1.8; color: var(--text-light);">
                         <li>#30: Player Data to JSON</li>
                         <li>#31: JSON to Player Data</li>
                         <li>#32: Game Settings to JSON</li>
@@ -1186,7 +1830,7 @@ bool bSuccess = FJsonObjectConverter::JsonObjectStringToUStruct(
                         Saves a JSON string to a file on disk.
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>FString JsonString = TEXT("{\"level\":5,\"xp\":1500}");
@@ -1208,7 +1852,7 @@ bool bSuccess = UStructForgeBlueprintLibrary::SaveJsonToFile(JsonString, FilePat
                         Loads a JSON string from a file.
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>FString FilePath = FPaths::ProjectSavedDir() / TEXT("GameData.json");
@@ -1229,7 +1873,7 @@ bool bSuccess = UStructForgeBlueprintLibrary::LoadJsonFromFile(FilePath, JsonStr
                     <div class="function-description">
                         Convenience functions for saving/loading specific struct types.
                     </div>
-                    <ul style="margin: 1rem 0; line-height: 1.8;">
+                    <ul style="margin: 1rem 0; line-height: 1.8; color: var(--text-light);">
                         <li>#38: Save Player Data to File</li>
                         <li>#39: Load Player Data from File</li>
                         <li>#40: Save Game Settings to File</li>
@@ -1262,6 +1906,7 @@ bool bSuccess = UStructForgeBlueprintLibrary::LoadJsonFromFile(FilePath, JsonStr
                         Validates whether a string contains valid JSON.
                     </div>
                     <div class="code-section">
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>FString TestJson = TEXT("{\"valid\":true}");
@@ -1285,6 +1930,7 @@ bool bIsValid = UStructForgeBlueprintLibrary::IsValidJson(TestJson);</pre>
                         Returns all keys in a JSON object.
                     </div>
                     <div class="code-section">
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>TArray<FString> Keys = UStructForgeBlueprintLibrary::GetAllJsonKeys(JsonObj);
@@ -1340,6 +1986,7 @@ for (const FString& Key : Keys)
                         Merges two JSON objects with conflict resolution.
                     </div>
                     <div class="code-section">
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>UStructForgeJsonObject* MergedObj = UStructForgeBlueprintLibrary::MergeJsonObjects(
@@ -1360,6 +2007,7 @@ for (const FString& Key : Keys)
                         Formats JSON with indentation for readability.
                     </div>
                     <div class="code-section">
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>FString CompactJson = TEXT("{\"a\":1,\"b\":2}");
@@ -1380,6 +2028,7 @@ FString PrettyJson = UStructForgeBlueprintLibrary::PrettyPrintJson(CompactJson);
                         Removes unnecessary whitespace to minimize JSON size.
                     </div>
                     <div class="code-section">
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>FString PrettyJson = TEXT("{\n    \"a\": 1,\n    \"b\": 2\n}");
@@ -1400,6 +2049,7 @@ FString MinifiedJson = UStructForgeBlueprintLibrary::MinifyJson(PrettyJson);</pr
                         Calculate the depth of nested JSON objects.
                     </div>
                     <div class="code-section">
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>FString DeepJson = TEXT("{\"a\":{\"b\":{\"c\":{\"d\":1}}}}");
@@ -1430,13 +2080,13 @@ int32 Depth = UStructForgeHandler::GetJsonDepth(DeepJson);
                     <div class="function-description">
                         Generate sample data for testing serialization.
                     </div>
-                    <ul style="margin: 1rem 0; line-height: 1.8;">
+                    <ul style="margin: 1rem 0; line-height: 1.8; color: var(--text-light);">
                         <li>#49: Create Sample Player Data</li>
                         <li>#50: Create Sample Game Settings</li>
                         <li>#51: Create Sample Inventory</li>
                     </ul>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>// Generate test data
@@ -1487,7 +2137,7 @@ TArray<FInventoryItem> SampleInventory = UStructForgeBlueprintLibrary::CreateSam
                         Perform JSON operations on background threads with completion delegates.
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>FOnStructForgeAsyncComplete OnComplete;
@@ -1521,7 +2171,7 @@ UStructForgeHandler::SerializePlayerDataAsync(PlayerData, FilePath, OnComplete);
                         Control JSON serialization using UPROPERTY metadata tags.
                     </div>
                     <div class="code-section">
-                        <div class="code-label">C++ Example:</div>
+                        <div class="code-label">C++ Example</div>
                         <div class="code-block">
                             <button class="copy-button" onclick="copyCode(this)">Copy</button>
                             <pre>USTRUCT()
@@ -1565,12 +2215,12 @@ UStructForgeHandler::SerializeUStructToJsonObjectStringWithMetadata(
         function copyCode(button) {
             const codeBlock = button.parentElement.querySelector('pre');
             const text = codeBlock.textContent;
-            
+
             navigator.clipboard.writeText(text).then(() => {
                 const originalText = button.textContent;
                 button.textContent = 'Copied!';
-                button.style.background = '#28a745';
-                
+                button.style.background = '#10b981';
+
                 setTimeout(() => {
                     button.textContent = originalText;
                     button.style.background = '';
@@ -1586,11 +2236,11 @@ UStructForgeHandler::SerializeUStructToJsonObjectStringWithMetadata(
         filterTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const filter = tab.dataset.filter;
-                
+
                 // Update active tab
                 filterTabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                
+
                 // Show/hide sections and cards
                 if (filter === 'all') {
                     categorySections.forEach(section => section.classList.remove('hidden'));
@@ -1609,23 +2259,68 @@ UStructForgeHandler::SerializeUStructToJsonObjectStringWithMetadata(
 
         // Search functionality
         const searchInput = document.getElementById('searchInput');
+        const resultsCount = document.getElementById('resultsCount');
+        const noResults = document.getElementById('noResults');
+        
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
             
+            if (!searchTerm) {
+                // Reset when search is cleared
+                categorySections.forEach(section => section.classList.remove('hidden'));
+                functionCards.forEach(card => card.classList.remove('hidden'));
+                resultsCount.classList.remove('visible');
+                noResults.classList.remove('visible');
+                return;
+            }
+            
+            let visibleCount = 0;
+            let visibleSections = new Set();
+            
+            // Search through cards
             functionCards.forEach(card => {
                 const text = card.textContent.toLowerCase();
                 if (text.includes(searchTerm)) {
                     card.classList.remove('hidden');
+                    visibleCount++;
+                    // Track which section this card belongs to
+                    const parentSection = card.closest('.category-section');
+                    if (parentSection) {
+                        visibleSections.add(parentSection);
+                    }
                 } else {
                     card.classList.add('hidden');
                 }
             });
             
-            // Show all sections when searching
-            if (searchTerm) {
-                categorySections.forEach(section => section.classList.remove('hidden'));
+            // Hide sections with no visible cards
+            categorySections.forEach(section => {
+                if (visibleSections.has(section)) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+            
+            // Update results count
+            if (visibleCount > 0) {
+                resultsCount.textContent = `${visibleCount} result${visibleCount !== 1 ? 's' : ''}`;
+                resultsCount.classList.add('visible');
+                noResults.classList.remove('visible');
+            } else {
+                resultsCount.classList.remove('visible');
+                noResults.classList.add('visible');
+            }
+        });
+
+        // Clear search on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.activeElement === searchInput) {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
             }
         });
     </script>
 </body>
+
 </html>
